@@ -162,7 +162,7 @@ public class UsuarioDAOImplementation implements IUserDAO {
         }
         return result;
     }
-
+//comentarios
     @Override
     public Result GetDetail(int idUser) {
         Result result = new Result();
