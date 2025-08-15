@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Formulario</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script
+            src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q"
+            crossorigin="anonymous"
+        ></script>
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+            integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr"
+            crossorigin="anonymous"
+            />
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css"
+            />
+        <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;1,300&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
+    </head>
+    <style>
+        .cormorant-garamond {
+            font-family: "Cormorant Garamond", serif;
+            font-optical-sizing: auto;
+            font-weight: 300;
+            font-style: normal;
+        }
+        .nunito-sans {
+            font-family: "Nunito Sans", sans-serif;
+            font-optical-sizing: auto;
+            font-weight: 300;
+            font-style: normal;
+            font-variation-settings:
+                "wdth" 100,
+                "YTLC" 500;
+        }
+    </style>
+    <body>
+        <div class="container m-4 cormorant-garamond ">
+            <div class="row">
+
+                <form
+                    method="POST"
+                    th:object="${usuario}"
+                    th:action="@{/usuario/add}"
+                    >
+
+                    <div class="usuario" th:if="${
+                         (idUsuario == 0 && idDireccion == 0) ||
+                         (idUsuario != 0 && idDireccion == -1)
+                         }">
+                        <div class="col-12">
+                            <div class="input-group mb-3 flex-column">
+                                <div class="d-flex w-100">
+                                    <span class="input-group-text" id="basic-addon1">@</span>
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        placeholder="Username"
+                                        aria-label="Username"
+                                        aria-describedby="basic-addon1"
+                                        th:field="*{Username}"
+                                        id="username"
+                                        />
+                                </div>
+                                <span class="err-msg text-danger fs-6 fw-lighter mt-1"></span>
+
+                            </div>
+
+                        </div>
+                        <div class="col-12">
+                            <div class="input-group mb-3 flex-column">
+                                <div class="d-flex w-100">
+                                    <span class="input-group-text" id="basic-addon1">
+                                        <i class="bi bi-file-person"></i>
+                                    </span>
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        placeholder="Nombre(s)"
+                                        aria-label="nombre"
+                                        aria-describedby="basic-addon1"
+                                        th:field="*{NombreUsuario}"
+                                        id="nombre"
+                                        />
+
+                                </div>
+                                <span class="err-msg text-danger fs-6 fw-lighter mt-1"></span>
+                                <span class="text-danger fs-6 fw-lighter mt-1"
+                                      th:if="${#fields.hasErrors('NombreUsuario')}"
+                                      th:errors="*{NombreUsuario}">
+                                    Message error
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="input-group flex-column mb-3">
+                                <div class="d-flex w-100">
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        placeholder="Apellido Paterno"
+                                        aria-label="apellidoPaterno"
+                                        aria-describedby="basic-addon1"
+                                        th:field="*{ApellidoPaterno}"
+                                        id="apellidoPaterno"
+                                        />
+                                </div>
+                                <span class=" form-text err-msg text-danger fs-6 fw-lighter d-block mt-1"></span>
+                                <span class="text-danger fs-6 fw-lighter mt-1"
+                                      th:if="${#fields.hasErrors('ApellidoPaterno')}"
+                                      th:errors="*{ApellidoPaterno}">
+                                </span>
+                            </div>
+
+                        </div>
+                        <div class="col-6">
+                            <div class="input-group flex-column mb-3">
+                                <div class="d-flex w-100">
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        placeholder="Apellido Materno"
+                                        aria-label="apellidoMaterno"
+                                        aria-describedby="basic-addon1"
+                                        th:field="*{ApellidoMaterno}"
+                                        id="apellidoMaterno"
+                                        />
+                                </div>
+                                <span class="form-text err-msg text-danger fs-6 fw-lighter d-block mt-1"></span>
+                                <span class="text-danger fs-6 fw-lighter mt-1"
+                                      th:if="${#fields.hasErrors('ApellidoMaterno')}"
+                                      th:errors="*{ApellidoMaterno}">
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="input-group flex-column mb-3">    
+                                <div class="d-flex w-100">
+                                    <span class="input-group-text" id="basic-addon1">
+                                        <i class="bi bi-key-fill"></i
+                                        ></span>
+                                    <input
+                                        type="password"
+                                        class="form-control"
+                                        placeholder="Contraseña"
+                                        aria-label="password"
+                                        aria-describedby="basic-addon1"
+                                        th:field="*{Password}"
+                                        id="password"
+                                        />
+
+                                </div>
+                                <small class="form-text err-msg fs-6 fw-lighter d-block mt-1"
+                                       id="password-msg"></small>
+                                <span class="text-danger fs-6 fw-lighter mt-1"
+                                      th:if="${#fields.hasErrors('Password')}"
+                                      th:errors="*{Password}">
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="input-group flex-column mb-3"> 
+                                <div class="d-flex w-100">
+                                    <span class="input-group-text" id="basic-addon1"
+                                          ><i class="bi bi-key-fill"></i
+                                        ></span>
+                                    <input
+                                        type="password"
+                                        class="form-control"
+                                        placeholder="Confirmar contraseña"
+                                        aria-label="confirmPassword"
+                                        aria-describedby="basic-addon1"
+                                        id="confirmPassword"
+                                        />
+                                </div>
+
+                                <small class="form-text err-msg fs-6 fw-lighter d-block mt-1"
+                                       id="confirmPassword-msg"></small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="input-group mb-3">
+
+                                <span class="input-group-text" id="basic-addon1"
+                                      ><i class="bi bi-telephone-forward-fill"></i
+                                    ></span>
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    placeholder="Telefono"
+                                    aria-label="telefono"
+                                    aria-describedby="basic-addon1"
+                                    th:field="*{Telefono}"
+                                    id="telefono"
+                                    />
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="input-group mb-3">
+                                <span class="input-group-text" id="basic-addon1"
+                                      ><i class="bi bi-phone-fill"></i
+                                    ></span>
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    placeholder="Celular"
+                                    aria-label="celular"
+                                    aria-describedby="basic-addon1"
+                                    th:field="*{Celular}"
+                                    id="celular"
+                                    />
+                            </div>
+                        </div>
+                        <div class="col-12">
+
+                            <div class="input-group flex-column mb-3"> 
+                                <div class="d-flex w-100">
+
+                                    <span class="input-group-text" id="basic-addon1"
+                                          ><i class="bi bi-envelope-at-fill"></i
+                                        ></span>
+                                    <input
+                                        type="email"
+                                        class="form-control"
+                                        placeholder="Email"
+                                        aria-label="email"
+                                        aria-describedby="basic-addon1"
+                                        th:field="*{Email}"
+                                        id="email"
+                                        />
+                                </div>
+                                <small class="form-text err-msg fs-6 fw-lighter d-block mt-1"></small>
+                                <span class="text-danger fs-6 fw-lighter mt-1"
+                                      th:if="${#fields.hasErrors('Email')}"
+                                      th:errors="*{Email}">
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="input-group flex-column mb-3"> 
+                                <div class="d-flex w-100">
+                                    <label class="input-group-text" for="fechaNacimiento">Fecha de Nacimiento</label>
+                                    <input
+                                        type="date"
+                                        class="form-control"
+                                        placeholder="fecha nacimiento"
+                                        aria-label="fechaNacimiento"
+                                        id="fechaNacimiento"
+                                        aria-describedby="basic-addon1"
+                                        th:field="*{FechaNacimiento}"
+                                        />
+                                </div>
+                                <small class="form-text text-danger err-msg fs-6 fw-lighter d-block mt-1"></small>
+
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 col-6">
+                            <span class="text-secondary small d-block mb-1">Sexo</span>
+                            <div class="btn-group w-100" role="group" aria-label="Seleccionar sexo">
+                                <input type="radio" class="btn-check" name="genero" id="masculino" th:value="'M'" th:field="*{Sexo}" autocomplete="off">
+                                <label class="btn btn-outline-secondary" for="masculino">Masculino</label>
+
+                                <input type="radio" class="btn-check" name="genero" id="femenino" th:value="'F'" th:field="*{Sexo}" autocomplete="off">
+                                <label class="btn btn-outline-secondary" for="femenino">Femenino</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-6">
+                            <span class="text-secondary small d-block mb-1">&nbsp;</span>
+
+                            <div class="input-group">
+                                <span class="input-group-text" id="basic-addon1">
+                                    <i class="bi bi-person-video2"></i>
+                                </span>
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    placeholder="CURP"
+                                    aria-label="curp"
+                                    aria-describedby="basic-addon1"
+                                    th:field="*{Curp}"
+                                    />
+                            </div>
+                        </div>
+
+
+
+                        <div class="input-group col-12 mt-3">
+                            <select class="form-select" th:field="*{Rol.IdRol}" id="rol" aria-label="Default select example">
+                                <option value="0" selected disabled >Rol</option>
+                                <option th:each="role : ${Roles}" th:text="${role.NombreRol}" th:value="${role.IdRol}"></option>                                               
+
+                            </select>
+                        </div>
+                    </div>
+                    <div class="direccion" th:if="${
+                         (idUsuario == 0 && idDireccion == 0) ||
+                         (idUsuario != 0 && idDireccion != 0 && idDireccion != -1)
+                         }"  >
+
+                        <h1 class="fs-5 mt-3 mb-3">Registrar dirección</h1>
+
+                        <div class="col-12">
+
+                            <div class="input-group mb-3">
+                                <span class="input-group-text" id="basic-addon1"
+                                      ><i class="bi bi-house-door-fill"></i
+                                    ></span>
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    placeholder="Calle"
+                                    aria-label="calle"
+                                    aria-describedby="basic-addon1"
+                                    th:field="*{direccion.Calle}"
+                                    />
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="input-group mb-3">
+                                <span class="input-group-text" id="basic-addon1">
+                                    #Ext
+                                </span>
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    placeholder="Num. Ext."
+                                    aria-label="NumeroExterior"
+                                    aria-describedby="basic-addon1"
+                                    th:field="*{direccion.NumeroExterior}"
+                                    />
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="input-group mb-3">
+                                <span class="input-group-text" id="basic-addon1">
+                                    #Int
+                                </span>
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    placeholder="Num. Int.(Opcional)"
+                                    aria-label="NumeroInterior"
+                                    aria-describedby="basic-addon1"
+                                    th:field="*{direccion.NumeroInterior}"
+                                    />
+                            </div>
+                        </div>
+                        <div class="col-6"> 
+                            <div class="input-group  mt-3 ">
+                                <select class="form-select"  id="pais" aria-label="Default select example">
+                                    <option value="0" selected disabled >País</option>
+                                    <option th:each="pais : ${Paises}" th:text="${pais.Nombre}" th:value="${pais.IdPais}"></option>                                               
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-6"> 
+                            <div class="input-group mt-3 ">
+                                <select class="form-select"  id="estado" aria-label="Default select example">
+                                    <option value="0" selected disabled >Estado</option>
+                                </select>
+                            </div> 
+                        </div>
+                        <div class="input-group col-12 mt-3 ">
+                            <select class="form-select"  id="municipio" aria-label="Default select example">
+                                <option value="0" selected disabled >Municipio</option>
+                            </select>
+                        </div>
+                        <div class="col-6"> 
+                            <div class="input-group  mt-3 ">
+                                <select class="form-select" th:field="*{direccion.Colonia.IdColonia}" id="colonia" aria-label="Default select example">
+                                    <option value="0" selected disabled >Colonia</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="input-group mt-3">
+                                <input
+                                    type="text"
+                                    id="cp"
+                                    class="form-control "
+                                    placeholder="Código Postal"
+                                    aria-label="cp"
+                                    aria-describedby="basic-addon1"
+                                    disabled
+                                    />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 mt-2">
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                    </div>
+                </form>
+            </div>
+
+
+            <script>
+                $(document).ready(function () {
+                    $("#nombre, #apellidoPaterno, #apellidoMaterno, #password, #confirmPassword, #username").on('paste', function (e) {
+                        e.preventDefault();
+                    });
+                    function OnlyLetters(event, input) {
+                        let key = event.key;
+                        let regex = new RegExp(/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/);
+                        if (!regex.test(key)) {
+                            event.preventDefault();
+                            $(input).removeClass("border-success").addClass("border-danger");
+                            $(input).parent("div").siblings(".err-msg").text("Solo se permiten letras");
+                        } else {
+                            $(input).removeClass("border-danger").addClass("border-success");
+                            $(input).parent("div").siblings(".err-msg").text("");
+                        }
+                    }
+                    $("#nombre, #apellidoPaterno, #apellidoMaterno").keydown(function (event) {
+                        OnlyLetters(event, this);
+                    });
+                });
+                $(document).ready(function () {
+                    function validatePasswords() {
+                        let regex = new RegExp(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/);
+                        let password = $("#password").val();
+                        let confirmPassword = $("#confirmPassword").val();
+                        if (password.length > 0) {
+                            if (regex.test(password)) {
+                                $("#password-msg").text("Contraseña válida").removeClass("text-danger").addClass("text-success");
+                                console.log("La contraseña es válida");
+                            } else {
+                                $("#password-msg").text("Debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un símbolo").removeClass("text-success").addClass("text-danger");
+                                console.log("La contraseña no es válida");
+                            }
+                        }
+                        if (confirmPassword.length > 0) {
+                            if (password === confirmPassword) {
+                                $("#confirmPassword-msg").text("Las contraseñas coinciden").removeClass("text-danger").addClass("text-success");
+                                console.log("La contraseña coincide.");
+                            } else {
+                                $("#confirmPassword-msg").text("Las contraseñas no coinciden").removeClass("text-success").addClass("text-danger");
+                                console.log("La contraseña no coinciden");
+                            }
+                        }
+                    }
+                    $("#password, #confirmPassword").on("input", validatePasswords);
+                });
+                $(document).ready(function () {
+                    function validateUsername() {
+                        let regex = new RegExp(/^(?=.{3,16}$)(?![_0-9])[a-zA-Z0-9_]+(?<!_)$/);
+                        let username = $("#username").val();
+                        if (username.length > 0) {
+                            if (regex.test(username)) {
+                                $("#username").removeClass("border-danger").addClass("border-success");
+                                $("#username").parent("div").siblings(".err-msg").text("");
+                            } else {
+                                $("#username").removeClass("border-success").addClass("border-danger");
+                                $("#username").parent("div").siblings(".err-msg").text("Formato no válido");
+                            }
+                        }
+
+                    }
+                    $("#username").on("input", validateUsername);
+                });
+                $(document).ready(function () {
+                    $("#telefono, #celular").on("paste", function (e) {
+                        e.preventDefault();
+                    }).on("input", function () {
+                        let input = $(this).val();
+                        input = input.replace(/\D/g, '');
+                        if (input.length > 10) {
+                            input = input.substring(0, 10);
+                        }
+
+                        if (input.length > 6 && input.length <= 10) {
+                            input = '(' + input.substr(0, 3) + ')' + input.substr(3, 6) + '-' + input.substr(6, 10);
+                        } else if (input.length > 3) {
+                            input = '(' + input.substr(0, 3) + ')' + input.substr(3);
+                        } else if (input.length > 0) {
+                            input = '(' + input;
+                        }
+                        $(this).val(input);
+                    });
+                });
+
+                $(document).ready(function () {
+                    function validateEmail() {
+                        let regex = new RegExp(/(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/);
+                        input = $("#email").val();
+                        if (regex.test(input)) {
+                            $("#email").removeClass("border-danger").addClass("border-success");
+                            $("#email").parent("div").siblings(".err-msg").text("");
+                        } else {
+                            $("#email").removeClass("border-success").addClass("border-danger");
+                            $("#email").parent("div").siblings(".err-msg").text("Formato no válido");
+                        }
+                    }
+                    $("#email").on("input", validateEmail);
+                });
+                $(document).ready(function () {
+                    function validateDate() {
+                        fechaInput = $("#fechaNacimiento").val();
+
+                        const partes = fechaInput.split('-');
+                        const dia = parseInt(partes[2], 10);
+                        const mes = parseInt(partes[1], 10) - 1;
+                        const anio = parseInt(partes[0], 10);
+                        const fecha = new Date(anio, mes, dia);
+                        console.log(fecha)
+                        console.log(fechaInput)
+                        const hoy = new Date();
+                        if (fecha.getDate() !== dia || fecha.getMonth() !== mes || fecha.getFullYear() !== anio) {
+                            $("#fechaNacimiento").parent("div").siblings(".err-msg").text("La fecha no es válida");
+                            $("#fechaNacimiento").removeClass("border-success").addClass("border-danger");
+                        } else if (fecha > hoy) {
+                            $("#fechaNacimiento").parent("div").siblings(".err-msg").text("La fecha no puede ser futura");
+                            $("#fechaNacimiento").removeClass("border-success").addClass("border-danger");
+                        } else if (hoy.getFullYear() - anio > 120) {
+                            $("#fechaNacimiento").parent("div").siblings(".err-msg").text("La fecha no puede ser más de 120 años");
+                            $("#fechaNacimiento").removeClass("border-success").addClass("border-danger");
+                        } else {
+                            $("#fechaNacimiento").removeClass("border-danger").addClass("border-success");
+                            $("#fechaNacimiento").parent("div").siblings(".err-msg").text("");
+
+                        }
+                    }
+                    $("#fechaNacimiento").on("input", validateDate);
+                });
+
+
+                function cleanForm() {
+                    $("input").removeClass("border-danger").removeClass("border-success");
+                    $(".err-msg ").text("");
+                    $("input").val("");
+                    $("select").val(0);
+
+                    $('form').find('input[type="radio"]').prop('checked', false);
+                }
+                $(document).on('keydown', function (event) {
+                    if (event.key === 'Escape' || event.key === 'Esc') {
+                        cleanForm();
+                    }
+                });
+
+                $(document).ready(function () {
+                    $("#pais").change(function () {
+                        $.ajax({
+                            type: 'GET',
+                            url: `/direccion/GetEstados/${$('#pais').val()}`,
+                            dataType: 'JSON',
+                            success: function (data, textStatus, jqXHR) {
+                                if (data.correct) {
+                                    $("#estado").empty().append('<option value="0" selected disabled >Estado</option>');
+                                    $.each(data.objects, function (indice, estado) {
+                                        $("#estado").append(`<option value='${estado.idEstado}'>${estado.nombre}</option>`)
+                                    });
+                                }
+                            },
+                            error: function (jqXHR, textStatus, errorThrown) {
+                                alert("something went wrong");
+
+                            }
+                        });
+                    });
+                    $("#estado").change(function () {
+                        $.ajax({
+                            type: 'GET',
+                            url: `/direccion/GetMunicipios/${$('#estado').val()}`,
+                            dataType: 'JSON',
+                            success: function (data, textStatus, jqXHR) {
+                                if (data.correct) {
+                                    $("#municipio").empty().append('<option value="0" selected disabled >Municipio</option>');
+                                    $.each(data.objects, function (indice, municipio) {
+                                        $("#municipio").append(`<option value='${municipio.idMunicipio}'>${municipio.nombre}</option>`)
+                                    });
+                                }
+                            },
+                            error: function (jqXHR, textStatus, errorThrown) {
+                                alert("something went wrong");
+
+                            }
+                        });
+                    });
+                    $("#municipio").change(function () {
+                        $.ajax({
+                            type: 'GET',
+                            url: `/direccion/GetColonias/${$('#municipio').val()}`,
+                            dataType: 'JSON',
+                            success: function (data, textStatus, jqXHR) {
+                                if (data.correct) {
+                                    $("#cp").val('');
+                                    $("#colonia").empty().append('<option value="0" selected disabled >Colonia</option>');
+                                    $.each(data.objects, function (indice, colonia) {
+                                        $("#colonia").append(`<option value='${colonia.idColonia}'>${colonia.nombre}</option>`);
+                                        $("#colonia").change(function () {
+                                            $("#cp").val(colonia.codigoPostal);
+                                        });
+                                    });
+
+                                }
+                            },
+                            error: function (jqXHR, textStatus, errorThrown) {
+                                alert("something went wrong");
+
+                            }
+                        });
+                    });
+                });
+
+                $(document).ready(function () {
+                    $("form").on('submit', function (e) {
+                        $("#nombre, #apellidoPaterno, #apellidoMaterno").trigger("keydown");
+                        $("#password, #confirmPassword").trigger("input");
+                        $("#username").trigger("input");
+                        $("#email").trigger("input");
+                        $("#fechaNacimiento").trigger("input");
+
+                        if ($(".border-danger").length > 0) {
+                            e.preventDefault();
+                            alert("Datos no validos");
+                        }
+                    });
+                });
+
+
+            </script>
+
+        </div>
+    </body>
+</html>

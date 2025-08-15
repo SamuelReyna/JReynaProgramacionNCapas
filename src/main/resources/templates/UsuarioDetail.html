@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+
+    <head>
+        <title>Detalles de usuario</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script
+            src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q"
+            crossorigin="anonymous"
+        ></script>
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+            integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr"
+            crossorigin="anonymous"
+            />
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css"
+            />
+        <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;1,300&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
+    </head>
+    <style>
+        .cormorant-garamond {
+            font-family: "Cormorant Garamond", serif;
+            font-optical-sizing: auto;
+            font-weight: 300;
+            font-style: normal;
+        }
+        .nunito-sans {
+            font-family: "Nunito Sans", sans-serif;
+            font-optical-sizing: auto;
+            font-weight: 300;
+            font-style: normal;
+            font-variation-settings:
+                "wdth" 100,
+                "YTLC" 500;
+        }
+    </style>
+
+    <body class="bg-primary-subtle cormorant-garamond">
+        <div class="container  ">
+            <div class="row">
+                <div class="col-1 mt-3">
+                    <a class="btn btn-success " th:href="@{/usuario}">
+                        <i class="bi bi-arrow-return-left"></i>
+                    </a>
+                </div>
+                <div class="col-3 mt-3">
+                    <h1 class="fst-italic"> Detalles </h1>
+                </div>
+                <div class="col-2"></div>
+
+                <div class="col-4 mt-3">
+                    <div class="input-group flex-nowrap m-1">
+                        <span class="input-group-text" id="addon-wrapping">
+                            <i class="bi bi-search"></i>
+                        </span>
+                        <input type="text" class="form-control" placeholder="Buscar" aria-label="buscar" aria-describedby="addon-wrapping">
+                    </div>
+                </div>
+                <div class="col-2 mt-3">
+                    <button class="btn text-bg-success m-1" type="button" >
+                        <i class="bi bi-arrow-clockwise"></i>
+                    </button>
+                    <a 
+                        th:href="@{/usuario/form?(IdUsuario=${usuario.idUser}, IdDireccion=-2)}"
+                        class="btn text-bg-primary m-1"
+
+                        >
+                        <i class="bi bi-plus-circle-fill"></i>
+                    </a>
+                </div>
+
+
+            </div>
+
+
+            <div class="row ">
+                <div class="col-xl-4 col-12 mt-2">
+                    <div class="card shadow mb-2">
+                        <a 
+                            th:href="@{/usuario/form?(IdUsuario=${usuario.idUser}, IdDireccion=-1)}"
+                            class="btn  m-1"
+
+                            >
+                            <i class="bi bi-pencil-square"></i>    
+                        </a>
+                        <div class="card-body text-center">
+
+                            <img src="https://www.pngmart.com/files/23/Profile-PNG-Photo.png" class="rounded-circle img-fluid mb-3"
+                                 style="width: 120px; height: 120px; object-fit: cover;" alt="Foto de perfil">
+
+                            <h5 class="card-title fw-bold mb-1"
+                                th:text="|${usuario.NombreUsuario} ${usuario.ApellidoPaterno} ${usuario.ApellidoMaterno ?: ' '}|">
+                            </h5>
+                            <p class="text-muted mb-2">
+                                <strong>Username:</strong> <span th:text="${usuario.Username}"></span>
+                            </p>
+                            <p class="text-muted mb-3">
+                                <strong>Rol:</strong> <span th:text="${usuario.Rol.NombreRol}"></span>
+                            </p>
+
+                            <h6 class="text-primary fw-bold mt-4">Información de Contacto</h6>
+                            <ul class="list-group list-group-flush text-start mb-3">
+                                <li class="list-group-item">
+                                    <strong>Email:</strong> <span th:text="${usuario.Email}"></span>
+                                </li>
+                                <li class="list-group-item">
+                                    <strong>Tel.:</strong> <span th:text="${usuario.Telefono}"></span>
+                                </li>
+                                <li class="list-group-item">
+                                    <strong>Cel.:</strong> <span th:text="${usuario.Celular}"></span>
+                                </li>
+                            </ul>
+
+                            <h6 class="text-primary fw-bold">Información Personal</h6>
+                            <ul class="list-group list-group-flush text-start">
+                                <li class="list-group-item">
+                                    <strong>CURP:</strong> <span class="text-uppercase   nunito-sans" th:text="${usuario.Curp}"></span>
+                                </li>
+                                <li class="list-group-item">
+                                    <strong>Fecha de Nacimiento:</strong> <span th:text="${usuario.FechaNacimiento}"></span>
+                                </li>
+                                <li class="list-group-item">
+                                    <strong>Sexo:</strong>
+                                    <span th:text="${usuario.Sexo != 'M ' ? 'Femenino' : 'Masculino'}"></span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class=" col-xl-8  col-12 col-sm-12 col-md-12 mt-2">
+                    <div class="table-responsive text-center   ">
+                        <table class="table table-light table-hover rounded shadow mb-2">
+                            <thead class="table-dark">
+                            <th scope="col">Acciones</th>
+                            <th scope="col">Calle</th>
+                            <th scope="col">Número Interior</th>
+                            <th scope="col">Número Exterior</th>
+                            <th scope="col">Colonia</th>
+                            <th scope="col">Codigo Postal</th>
+                            <th scope="col">Municipio</th>
+                            <th scope="col">Estado</th>
+                            <th scope="col">Pais</th>
+                            </thead>
+
+                            <tbody>
+                                <tr th:if="${usuario.direcciones.size() ==0 }">
+                                    <td colspan="9" class="">Sin Direcciones registradas...</td>
+                                </tr>
+                                <tr th:if="${usuario.direcciones.size() > null }" th:each="direccion : ${usuario.direcciones}">
+                                    <td>
+                                        <div class="row">
+                                            <div class="d-flex justify-content-center gap-2">
+                                                <a th:href="@{/usuario/form?(IdUsuario=${usuario.idUser}, IdDireccion=${direccion.idDireccion})}"
+                                                   class="btn text-bg-warning">
+                                                    <i class="bi bi-pencil-fill"></i>
+                                                </a>
+                                                <a th:href="@{/direccion/Delete/{idDireccion}(idDireccion=${direccion.idDireccion})}"
+                                                   class="btn text-bg-danger">
+                                                    <i class="bi bi-trash-fill"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td th:text="${direccion.calle}"> </td>
+                                    <td th:text="${direccion.NumeroExterior}"> </td>
+                                    <td th:text="${direccion.NumeroInterior}"> </td>
+                                    <td th:text="${direccion.colonia.Nombre}"> </td>
+                                    <td th:text="${direccion.colonia.CodigoPostal}"></td>
+                                    <td th:text="${direccion.colonia.municipio.Nombre}"> </td>
+                                    <td th:text="${direccion.colonia.municipio.estado.Nombre}"> </td>
+                                    <td th:text="${direccion.colonia.municipio.estado.pais.Nombre}"> </td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+
+</html>
