@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequestMapping("direccion")
 public class DireccionController {
 
-
     @Autowired
     private EstadoDAOImplementation estadoDAOImplementation;
 
@@ -41,6 +40,24 @@ public class DireccionController {
     @ResponseBody
     public Result ColoniaByMunicipio(@PathVariable int IdMunicipio) {
         return coloniaDAOImplementation.GetByMunicipio(IdMunicipio);
+    }
+
+    @GetMapping("GetColonias")
+    @ResponseBody
+    public Result Colonias() {
+        return coloniaDAOImplementation.GetAll();
+    }
+
+    @GetMapping("GetEstados")
+    @ResponseBody
+    public Result Estados() {
+        return estadoDAOImplementation.GetAll();
+    }
+
+    @GetMapping("GetMunicipios")
+    @ResponseBody
+    public Result Municipios() {
+        return municipioDAOImplementation.GetAll();
     }
 
 }

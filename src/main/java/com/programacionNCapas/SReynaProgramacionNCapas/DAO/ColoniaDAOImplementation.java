@@ -23,7 +23,7 @@ public class ColoniaDAOImplementation implements IColoniaDAO {
                 cs.registerOutParameter(1, java.sql.Types.REF_CURSOR);
                 cs.setInt(2, IdMunicipio);
                 cs.execute();
-                
+
                 ResultSet resultSet = (ResultSet) cs.getObject(1);
 
                 result.objects = new ArrayList<>();
@@ -43,6 +43,36 @@ public class ColoniaDAOImplementation implements IColoniaDAO {
             result.ex = ex;
             result.correct = false;
             result.errMessage = ex.getLocalizedMessage();
+        }
+        return result;
+    }
+
+    @Override
+    public Result GetAll() {
+
+        Result result = new Result();
+        try {
+            result.correct = jdbcTemplate.execute(
+                    "CALL getAllColonias(?)", (CallableStatementCallback<Boolean>) cs -> {
+                        cs.registerOutParameter(1, java.sql.Types.REF_CURSOR);
+                        cs.execute();
+                        ResultSet resultSet = (ResultSet) cs.getObject(1);
+                        result.objects = new ArrayList<>();
+                        while (resultSet.next()) {
+                            ColoniaML colonia = new ColoniaML(
+                                    resultSet.getInt("idColonia"),
+                                    resultSet.getString("Nombre"),
+                                    resultSet.getString("CodigoPostal")
+                            );
+                            result.objects.add(colonia);
+                        }
+                        return true;
+                    }
+            );
+        } catch (Exception ex) {
+            result.ex = ex;
+            result.errMessage = ex.getLocalizedMessage();
+            result.correct = false;
         }
         return result;
     }

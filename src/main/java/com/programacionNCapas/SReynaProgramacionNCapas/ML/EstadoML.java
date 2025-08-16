@@ -6,16 +6,24 @@ public class EstadoML {
     private String Nombre;
     public PaisML pais;
 
+    public PaisML getPais() {
+        return pais;
+    }
+
+    public void setPais(PaisML pais) {
+        this.pais = pais;
+    }
+
     public EstadoML() {
     }
 
-    public EstadoML(int idEstado, String nombre) {
-        this.IdEstado = idEstado;
-        this.Nombre = nombre;
+    public EstadoML(int IdEstado, String Nombre) {
+        this.IdEstado = IdEstado;
+        this.Nombre = Nombre;
     }
     
-    public void setIdEstado (int idEstado){
-        this.IdEstado = idEstado;
+    public void setIdEstado (int IdEstado){
+        this.IdEstado = IdEstado;
     }
     public int getIdEstado(){
         return IdEstado;

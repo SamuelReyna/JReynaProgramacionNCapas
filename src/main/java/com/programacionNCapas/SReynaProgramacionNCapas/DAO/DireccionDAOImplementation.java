@@ -107,6 +107,7 @@ public class DireccionDAOImplementation implements IDireccionDAO {
                 ResultSet resultSet = (ResultSet) cs.getObject(1);
 
                 if (resultSet.next()) {
+                    direccion.setIdDirecion(resultSet.getInt("idDireccion"));
                     direccion.setCalle(resultSet.getString("Calle"));
                     direccion.setNumeroInterior(resultSet.getString("NumeroInterior"));
                     direccion.setNumeroExterior(resultSet.getString("NumeroExterior"));

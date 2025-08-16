@@ -7,4 +7,6 @@ public interface IMunicipioDAO {
     
     Result GetByEstado(int IdEstado);
     
+    Result GetAll();
+    
 }

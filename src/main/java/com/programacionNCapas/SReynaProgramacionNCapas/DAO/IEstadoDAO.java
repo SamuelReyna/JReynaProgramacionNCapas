@@ -5,4 +5,5 @@ import com.programacionNCapas.SReynaProgramacionNCapas.ML.Result;
 public interface IEstadoDAO {
     
     Result GetByPais(int IdPais);
+    Result GetAll();
 }

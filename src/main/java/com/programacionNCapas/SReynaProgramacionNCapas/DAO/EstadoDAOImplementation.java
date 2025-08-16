@@ -46,4 +46,31 @@ public class EstadoDAOImplementation implements IEstadoDAO {
         return result;
     }
 
+    @Override
+    public Result GetAll() {
+        Result result = new Result();
+        try {
+            result.correct = jdbcTemplate.execute("CALL getAllEstado(?)", (CallableStatementCallback<Boolean>) cs -> {
+                cs.registerOutParameter(1, java.sql.Types.REF_CURSOR);
+                cs.execute();
+                ResultSet resultSet = (ResultSet) cs.getObject(1);
+                result.objects = new ArrayList<>();
+                while (resultSet.next()) {
+                    EstadoML estado = new EstadoML(
+                            resultSet.getInt("IdEstado"),
+                            resultSet.getString("Nombre")
+                    );
+                    result.objects.add(estado);
+                }
+                return true;
+            });
+        } catch (Exception ex) {
+            result.ex = ex;
+            result.correct = false;
+            result.errMessage = ex.getLocalizedMessage();
+        }
+        return result;
+
+    }
+
 }

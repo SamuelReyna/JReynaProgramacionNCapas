@@ -49,4 +49,24 @@ public class MunicipioDAOImplementation implements IMunicipioDAO {
         return result;
     }
 
+    @Override
+    public Result GetAll() {
+        Result result = new Result();
+        result.correct = jdbcTemplate.execute("CALL getAllMunicipio(?)", (CallableStatementCallback<Boolean>) cs -> {
+            cs.registerOutParameter(1, java.sql.Types.REF_CURSOR);
+            cs.execute();
+            ResultSet resultSet = (ResultSet) cs.getObject(1);
+            result.objects = new ArrayList<>();
+            while (resultSet.next()) {
+                MunicipioML municipio = new MunicipioML(
+                        resultSet.getInt("IdMunicipio"),
+                        resultSet.getString("Nombre")
+                );
+                result.objects.add(municipio);
+            }
+            return true;
+        });
+        return result;
+    }
+
 }

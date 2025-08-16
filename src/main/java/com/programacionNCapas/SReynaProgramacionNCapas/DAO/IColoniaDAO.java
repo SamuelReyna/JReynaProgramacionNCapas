@@ -7,4 +7,6 @@ import com.programacionNCapas.SReynaProgramacionNCapas.ML.Result;
 public interface IColoniaDAO {
     
     Result GetByMunicipio(int IdMunicipio);
+    
+    Result GetAll();
 }

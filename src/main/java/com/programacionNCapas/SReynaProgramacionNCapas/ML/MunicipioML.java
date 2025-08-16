@@ -6,6 +6,14 @@ public class MunicipioML {
     private String Nombre;
     public EstadoML estado;
 
+    public EstadoML getEstado() {
+        return estado;
+    }
+
+    public void setEstado(EstadoML estado) {
+        this.estado = estado;
+    }
+
     public MunicipioML() {
     }
 

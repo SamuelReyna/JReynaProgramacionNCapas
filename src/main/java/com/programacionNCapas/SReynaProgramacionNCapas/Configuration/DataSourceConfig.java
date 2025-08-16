@@ -8,7 +8,7 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 @Configuration
 public class DataSourceConfig {
-
+//Configuration
     @Bean
     public DataSource dataSource() {
 

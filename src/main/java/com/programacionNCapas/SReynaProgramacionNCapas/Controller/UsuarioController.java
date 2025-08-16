@@ -1,9 +1,14 @@
 package com.programacionNCapas.SReynaProgramacionNCapas.Controller;
 
+import com.programacionNCapas.SReynaProgramacionNCapas.DAO.ColoniaDAOImplementation;
 import com.programacionNCapas.SReynaProgramacionNCapas.DAO.DireccionDAOImplementation;
+import com.programacionNCapas.SReynaProgramacionNCapas.DAO.EstadoDAOImplementation;
+import com.programacionNCapas.SReynaProgramacionNCapas.DAO.MunicipioDAOImplementation;
 import com.programacionNCapas.SReynaProgramacionNCapas.DAO.PaisDAOImplementation;
 import com.programacionNCapas.SReynaProgramacionNCapas.DAO.RolDAOImplementation;
 import com.programacionNCapas.SReynaProgramacionNCapas.DAO.UsuarioDAOImplementation;
+import com.programacionNCapas.SReynaProgramacionNCapas.ML.DireccionML;
+import com.programacionNCapas.SReynaProgramacionNCapas.ML.PaisML;
 import com.programacionNCapas.SReynaProgramacionNCapas.ML.Result;
 import com.programacionNCapas.SReynaProgramacionNCapas.ML.UsuarioML;
 import jakarta.validation.Valid;
@@ -30,6 +35,12 @@ public class UsuarioController {
 
     @Autowired
     private PaisDAOImplementation paisDAOImplementation;
+    @Autowired
+    private EstadoDAOImplementation estadoDAOImplementation;
+    @Autowired
+    private MunicipioDAOImplementation municipioDAOImplementation;
+    @Autowired
+    private ColoniaDAOImplementation coloniaDAOImplementation;
 
     @Autowired
     private DireccionDAOImplementation direccionDAOImplementation;
@@ -94,14 +105,22 @@ public class UsuarioController {
         try {
             model.addAttribute("Roles", rolDAOImplementation.GetAll().objects);
             model.addAttribute("Paises", paisDAOImplementation.GetAll().objects);
-            model.addAttribute("idDireccion", IdDireccion);
-            model.addAttribute("idUsuario", IdUsuario);
+            model.addAttribute("Colonias", coloniaDAOImplementation.GetAll().objects);
+            model.addAttribute("Estados", estadoDAOImplementation.GetAll().objects);
+            model.addAttribute("Municipios", municipioDAOImplementation.GetAll().objects);
+
         } catch (Exception ex) {
 
             return "Exception";
         }
+
+        usuario.setIdUser(IdUsuario);
+        usuario.setDireccion(new DireccionML(IdDireccion));
+
         if (IdUsuario == 0 && IdDireccion == 0) { //Crear Usuario
+
             return "Form";// Formulario Completo 
+
         } else if (IdUsuario != 0 && IdDireccion == 0) { //detallesUsuario
             Result result = usuarioDAOImplementation.GetDetail(IdUsuario);
 
@@ -119,8 +138,14 @@ public class UsuarioController {
             return "Form"; //Solo para crear direccion
 
         } else if (IdUsuario != 0 && IdDireccion != 0) {
+
             Result result = direccionDAOImplementation.GetDireccion(IdDireccion);//EditarDireccion
-            model.addAttribute("direccion", result.object);
+            if (result.correct) {
+                usuario.setDireccion((DireccionML) result.object);
+                model.addAttribute("usuario", usuario);
+            } else {
+                model.addAttribute("direccion", null);
+            }
             return "Form"; //Solo parte de direccion editar
         }
 

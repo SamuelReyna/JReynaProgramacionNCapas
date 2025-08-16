@@ -13,14 +13,21 @@ public class DireccionML {
     }
 
     public DireccionML(
+            int IdDireccion) {
+        this.IdDireccion = IdDireccion;
+    }
+
+    public DireccionML(
             int idDireccion,
             String calle,
             String numeroInterior,
-            String numeroExterior) {
+            String numeroExterior,
+            ColoniaML Colonia) {
         this.IdDireccion = idDireccion;
         this.Calle = calle;
         this.NumeroExterior = numeroExterior;
         this.NumeroInterior = numeroInterior;
+        this.Colonia = Colonia;
     }
 
     public void setIdDirecion(int idDireccion) {
