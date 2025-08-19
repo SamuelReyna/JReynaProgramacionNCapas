@@ -12,16 +12,17 @@ import com.programacionNCapas.SReynaProgramacionNCapas.ML.PaisML;
 import com.programacionNCapas.SReynaProgramacionNCapas.ML.Result;
 import com.programacionNCapas.SReynaProgramacionNCapas.ML.UsuarioML;
 import jakarta.validation.Valid;
+import java.util.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 @Controller
 @RequestMapping("usuario")
@@ -74,6 +75,7 @@ public class UsuarioController {
     @PostMapping("/add")
     public String Add(
             @Valid
+            @RequestParam("imagenFile") MultipartFile imagen,
             @ModelAttribute("usuario") UsuarioML usuario,
             BindingResult bindingResult,
             Model model) {
@@ -89,7 +91,17 @@ public class UsuarioController {
             }
             return "Form";
         } else {
+            try {
+                if (imagen != null) {
+                    byte[] bytes = imagen.getBytes();
+                    String base64Img = Base64.getEncoder().encodeToString(bytes);
+                    usuario.setImg(base64Img);
+                }
+            } catch (Exception ex) {
+
+            }
             usuarioDAOImplementation.Add(usuario);
+
             return "redirect:/usuario";
         }
 

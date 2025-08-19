@@ -94,7 +94,7 @@
                         </a>
                         <div class="card-body text-center">
 
-                            <img src="https://www.pngmart.com/files/23/Profile-PNG-Photo.png" class="rounded-circle img-fluid mb-3"
+                            <img th:src="|${(usuario.Img != null) ? 'data:image/jpeg;base64,' +usuario.Img : 'https://www.pngmart.com/files/23/Profile-PNG-Photo.png'}|" class="rounded-circle img-fluid mb-3"
                                  style="width: 120px; height: 120px; object-fit: cover;" alt="Foto de perfil">
 
                             <h5 class="card-title fw-bold mb-1"

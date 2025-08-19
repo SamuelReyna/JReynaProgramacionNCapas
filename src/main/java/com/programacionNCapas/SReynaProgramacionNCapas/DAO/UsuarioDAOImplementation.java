@@ -8,12 +8,15 @@ import com.programacionNCapas.SReynaProgramacionNCapas.ML.PaisML;
 import com.programacionNCapas.SReynaProgramacionNCapas.ML.Result;
 import com.programacionNCapas.SReynaProgramacionNCapas.ML.RolML;
 import com.programacionNCapas.SReynaProgramacionNCapas.ML.UsuarioML;
+import java.io.StringReader;
+import java.sql.Clob;
 import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.CallableStatementCallback;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -78,6 +81,7 @@ public class UsuarioDAOImplementation implements IUserDAO {
                         usuario.setCurp(resultSet.getString("Curp"));
                         usuario.setUsername(resultSet.getString("Username"));
                         usuario.setEmail(resultSet.getString("Email"));
+                        usuario.setImg(resultSet.getString("Img"));
                         rol.setIdRol(resultSet.getInt("idRol"));
                         rol.setNombreRol(resultSet.getString("Rol"));
 
@@ -163,6 +167,7 @@ public class UsuarioDAOImplementation implements IUserDAO {
         return result;
     }
 //comentarios
+
     @Override
     public Result GetDetail(int idUser) {
         Result result = new Result();
@@ -192,6 +197,7 @@ public class UsuarioDAOImplementation implements IUserDAO {
                     usuario.setCurp(resultSet.getString("curp"));
                     usuario.setEmail(resultSet.getString("email"));
                     usuario.setPassword(resultSet.getString("password"));
+                    usuario.setImg(resultSet.getString("Img"));
                     usuario.Rol.setNombreRol(resultSet.getString("Rol"));
 
                     int idDireccion = 0;
@@ -258,7 +264,7 @@ public class UsuarioDAOImplementation implements IUserDAO {
         Result result = new Result();
 
         try {
-            jdbcTemplate.execute("{CALL UsuarioDireccionAdd(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)}",
+            result.correct = jdbcTemplate.execute("{CALL UsuarioDireccionAdd(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)}",
                     (CallableStatementCallback<Boolean>) callableStatement -> {
                         callableStatement.setString(1, usuario.getNombreUsuario());
                         callableStatement.setString(2, usuario.getApellidoPaterno());
@@ -276,13 +282,14 @@ public class UsuarioDAOImplementation implements IUserDAO {
                         callableStatement.setString(14, usuario.getDireccion().getNumeroInterior());
                         callableStatement.setString(15, usuario.getDireccion().getNumeroExterior());
                         callableStatement.setInt(16, usuario.getDireccion().Colonia.getIdColonia());
-                        int estatus = callableStatement.executeUpdate();
 
-                        if (estatus == -1) {
-                            return result.correct = true;
-                        } else {
-                            return result.correct = false;
-                        }
+                        Clob clob = callableStatement.getConnection().createClob();
+                        clob.setString(1, usuario.getImg());
+                        callableStatement.setClob(17, clob);
+
+                        callableStatement.execute();
+
+                        return true;
                     }
             );
 

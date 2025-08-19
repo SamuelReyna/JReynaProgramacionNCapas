@@ -31,6 +31,7 @@ public class UsuarioML {
     private String Celular;
     private String Curp;
     private String Sexo;
+    private String Img;
     public RolML Rol;
     public List<DireccionML> direcciones = new ArrayList<>();
     private DireccionML Direccion;
@@ -181,5 +182,13 @@ public class UsuarioML {
 
     public void setDireccion(DireccionML Direccion) {
         this.Direccion = Direccion;
+    }
+
+    public void setImg(String Img) {
+        this.Img = Img;
+    }
+
+    public String getImg() {
+        return Img;
     }
 }

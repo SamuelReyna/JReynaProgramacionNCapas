@@ -114,9 +114,16 @@
                                         </a>
                                     </div>
                                 </td>
-                                <td
-                                    th:text="|${usuario.NombreUsuario} ${usuario.ApellidoPaterno} ${usuario.ApellidoMaterno ?: ''}|"
-                                    ></td>
+                                <td class="text-center">
+                                    <div class="d-flex flex-column align-items-center">
+                                        <img th:src="|${(usuario.Img != null) ? 'data:image/jpeg;base64,' + usuario.Img : 'https://www.pngmart.com/files/23/Profile-PNG-Photo.png'}|"
+                                             class="rounded-circle img-fluid mb-2"
+                                             style="width: 120px; height: 120px; object-fit: cover;"
+                                             alt="Foto de perfil">
+                                        <span th:text="|${usuario.NombreUsuario} ${usuario.ApellidoPaterno} ${usuario.ApellidoMaterno ?: ''}|"></span>
+                                    </div>
+                                </td>
+
                                 <td th:text="${usuario.Username}"></td>
                                 <td>
                                     <p>
