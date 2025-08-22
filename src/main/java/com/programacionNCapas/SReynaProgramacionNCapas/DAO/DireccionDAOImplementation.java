@@ -6,6 +6,7 @@ import com.programacionNCapas.SReynaProgramacionNCapas.ML.EstadoML;
 import com.programacionNCapas.SReynaProgramacionNCapas.ML.MunicipioML;
 import com.programacionNCapas.SReynaProgramacionNCapas.ML.PaisML;
 import com.programacionNCapas.SReynaProgramacionNCapas.ML.Result;
+import com.programacionNCapas.SReynaProgramacionNCapas.ML.UsuarioML;
 import java.sql.ResultSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.CallableStatementCallback;
@@ -19,21 +20,20 @@ public class DireccionDAOImplementation implements IDireccionDAO {
     private JdbcTemplate jdbcTemplate;
 
     @Override
-    public Result updateDireccion(int IdDireccion) {
+    public Result updateDireccion(int IdDireccion, UsuarioML usuario) {
         Result result = new Result();
 
         try {
-            DireccionML direccion = new DireccionML();
-            result.correct = jdbcTemplate.execute("CALL UpdateDireccion(?,?,?,?,?,?)", (CallableStatementCallback<Boolean>) cs -> {
-                cs.setString(1, direccion.getCalle());
-                cs.setString(2, direccion.getNumeroExterior());
-                cs.setString(3, direccion.getNumeroExterior());
-                cs.setInt(4, direccion.Colonia.getIdColonia());
-                cs.setInt(5, direccion.Usuario.getIdUser());
-                cs.setInt(6, IdDireccion);
-                int status = cs.executeUpdate();
-                return status == -1;
 
+            result.correct = jdbcTemplate.execute("CALL UpdateDireccion(?,?,?,?,?,?)", (CallableStatementCallback<Boolean>) cs -> {
+                cs.setString(1, usuario.getDireccion().getCalle());
+                cs.setString(2, usuario.getDireccion().getNumeroExterior());
+                cs.setString(3, usuario.getDireccion().getNumeroExterior());
+                cs.setInt(4, usuario.getDireccion().Colonia.getIdColonia());
+                cs.setInt(5, usuario.getIdUser());
+                cs.setInt(6, IdDireccion);
+                cs.executeUpdate();
+                return true;
             });
         } catch (Exception ex) {
             result.correct = false;
@@ -49,10 +49,10 @@ public class DireccionDAOImplementation implements IDireccionDAO {
         Result result = new Result();
 
         try {
-            result.correct = jdbcTemplate.execute("DeleteDireccion(?)", (CallableStatementCallback<Boolean>) cs -> {
+            result.correct = jdbcTemplate.execute("CALL DeleteDireccion(?)", (CallableStatementCallback<Boolean>) cs -> {
                 cs.setInt(1, IdDireccion);
-                int status = cs.executeUpdate();
-                return status == -1;
+                cs.executeUpdate();
+                return true;
             });
         } catch (Exception ex) {
             result.correct = false;
@@ -64,15 +64,15 @@ public class DireccionDAOImplementation implements IDireccionDAO {
     }
 
     @Override
-    public Result AddDireccion(int IdUsuario) {
+    public Result AddDireccion(int IdUsuario, UsuarioML usuario) {
         Result result = new Result();
         try {
-            DireccionML direccion = new DireccionML();
-            jdbcTemplate.execute("CALL AddDireccion(?,?,?,?,?)", (CallableStatementCallback<Boolean>) cs -> {
-                cs.setString(1, direccion.getCalle());
-                cs.setString(2, direccion.getNumeroInterior());
-                cs.setString(3, direccion.getNumeroExterior());
-                cs.setInt(4, direccion.Colonia.getIdColonia());
+
+            result.correct = jdbcTemplate.execute("CALL AddDireccion(?,?,?,?,?)", (CallableStatementCallback<Boolean>) cs -> {
+                cs.setString(1, usuario.Direccion.getCalle());
+                cs.setString(2, usuario.Direccion.getNumeroInterior());
+                cs.setString(3, usuario.Direccion.getNumeroExterior());
+                cs.setInt(4, usuario.Direccion.Colonia.getIdColonia());
                 cs.setInt(5, IdUsuario);
                 int status = cs.executeUpdate();
                 return status == -1;
@@ -89,7 +89,10 @@ public class DireccionDAOImplementation implements IDireccionDAO {
     public Result GetDireccion(int IdDireccion) {
         Result result = new Result();
         try {
+            UsuarioML usuario = new UsuarioML();
             DireccionML direccion = new DireccionML();
+            usuario.Direccion = direccion;
+
             ColoniaML colonia = new ColoniaML();
             direccion.Colonia = colonia;
             MunicipioML municipio = new MunicipioML();
@@ -107,7 +110,8 @@ public class DireccionDAOImplementation implements IDireccionDAO {
                 ResultSet resultSet = (ResultSet) cs.getObject(1);
 
                 if (resultSet.next()) {
-                    direccion.setIdDirecion(resultSet.getInt("idDireccion"));
+                    usuario.setIdUser(resultSet.getInt("idUser"));
+                    direccion.setIdDireccion(resultSet.getInt("idDireccion"));
                     direccion.setCalle(resultSet.getString("Calle"));
                     direccion.setNumeroInterior(resultSet.getString("NumeroInterior"));
                     direccion.setNumeroExterior(resultSet.getString("NumeroExterior"));
@@ -122,7 +126,7 @@ public class DireccionDAOImplementation implements IDireccionDAO {
                     pais.setNombre(resultSet.getString("Pais"));
                 }
 
-                result.object = direccion;
+                result.object = usuario;
                 return true;
             });
         } catch (Exception ex) {

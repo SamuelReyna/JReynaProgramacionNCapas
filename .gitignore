@@ -34,3 +34,4 @@ build/
 
 
 src/main/java/com/programacionNCapas/SReynaProgramacionNCapas/configuration/DataSourceConfig.java
+src/main/resources/files

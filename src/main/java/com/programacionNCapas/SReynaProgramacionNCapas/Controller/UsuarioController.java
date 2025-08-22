@@ -7,12 +7,29 @@ import com.programacionNCapas.SReynaProgramacionNCapas.DAO.MunicipioDAOImplement
 import com.programacionNCapas.SReynaProgramacionNCapas.DAO.PaisDAOImplementation;
 import com.programacionNCapas.SReynaProgramacionNCapas.DAO.RolDAOImplementation;
 import com.programacionNCapas.SReynaProgramacionNCapas.DAO.UsuarioDAOImplementation;
+import com.programacionNCapas.SReynaProgramacionNCapas.ML.ColoniaML;
 import com.programacionNCapas.SReynaProgramacionNCapas.ML.DireccionML;
-import com.programacionNCapas.SReynaProgramacionNCapas.ML.PaisML;
+import com.programacionNCapas.SReynaProgramacionNCapas.ML.ErrorCM;
 import com.programacionNCapas.SReynaProgramacionNCapas.ML.Result;
+import com.programacionNCapas.SReynaProgramacionNCapas.ML.RolML;
 import com.programacionNCapas.SReynaProgramacionNCapas.ML.UsuarioML;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import org.apache.poi.ss.usermodel.DataFormatter;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -36,10 +53,13 @@ public class UsuarioController {
 
     @Autowired
     private PaisDAOImplementation paisDAOImplementation;
+
     @Autowired
     private EstadoDAOImplementation estadoDAOImplementation;
+
     @Autowired
     private MunicipioDAOImplementation municipioDAOImplementation;
+
     @Autowired
     private ColoniaDAOImplementation coloniaDAOImplementation;
 
@@ -74,15 +94,31 @@ public class UsuarioController {
 
     @PostMapping("/add")
     public String Add(
-            @Valid
-            @RequestParam("imagenFile") MultipartFile imagen,
+            @Valid @RequestParam("imagenFile") MultipartFile imagen,
             @ModelAttribute("usuario") UsuarioML usuario,
             BindingResult bindingResult,
             Model model) {
+
+        int idUsuario = usuario.getIdUser();
+        int idDireccion = usuario.Direccion.getIdDireccion();
+
+        // Caso: actualización de dirección
+        if (idUsuario != 0 && idDireccion != 0 && idDireccion != -2) {
+            direccionDAOImplementation.updateDireccion(idDireccion, usuario);
+            return "redirect:/usuario/form?&IdUsuario=" + idUsuario + "&IdDireccion=0";
+        }
+        //Caso: crear dirección
+        if (idUsuario != 0 && idDireccion == -2) {
+            direccionDAOImplementation.AddDireccion(idUsuario, usuario);
+            return "redirect:/usuario/form?&IdUsuario=" + idUsuario + "&IdDireccion=0";
+        }
+
+        // Caso: errores de validación
         if (bindingResult.hasErrors()) {
             model.addAttribute("usuarios", usuarioDAOImplementation.GetAll().objects);
             model.addAttribute("usuario", usuario);
             model.addAttribute("showAddModal", true);
+
             try {
                 model.addAttribute("Roles", rolDAOImplementation.GetAll().objects);
                 model.addAttribute("Paises", paisDAOImplementation.GetAll().objects);
@@ -90,27 +126,33 @@ public class UsuarioController {
                 return "Exception";
             }
             return "Form";
-        } else {
+        }
+
+        // Procesar imagen
+        if (imagen != null && !imagen.isEmpty()) {
             try {
-                if (imagen != null) {
-                    byte[] bytes = imagen.getBytes();
-                    String base64Img = Base64.getEncoder().encodeToString(bytes);
-                    usuario.setImg(base64Img);
+                String nombreArchivo = imagen.getOriginalFilename();
+                if (nombreArchivo != null) {
+                    String extension = nombreArchivo.substring(nombreArchivo.lastIndexOf('.') + 1).toLowerCase();
+                    if (extension.matches("jpg|jpeg|png")) {
+                        String base64Img = Base64.getEncoder().encodeToString(imagen.getBytes());
+                        usuario.setImg(base64Img);
+                    }
                 }
             } catch (Exception ex) {
 
             }
-            usuarioDAOImplementation.Add(usuario);
-
-            return "redirect:/usuario";
         }
 
+        // Guardar usuario
+        usuarioDAOImplementation.Add(usuario);
+        return "redirect:/usuario";
     }
 
     @GetMapping("/form")
     public String Form(
-            @RequestParam(name = "IdUsuario", required = false, defaultValue = "0") int IdUsuario,
-            @RequestParam(name = "IdDireccion", required = false, defaultValue = "0") int IdDireccion,
+            @RequestParam(name = "IdUsuario", required = false, defaultValue = "0") int idUsuario,
+            @RequestParam(name = "IdDireccion", required = false, defaultValue = "0") int idDireccion,
             @ModelAttribute("usuario") UsuarioML usuario,
             Model model
     ) {
@@ -120,47 +162,229 @@ public class UsuarioController {
             model.addAttribute("Colonias", coloniaDAOImplementation.GetAll().objects);
             model.addAttribute("Estados", estadoDAOImplementation.GetAll().objects);
             model.addAttribute("Municipios", municipioDAOImplementation.GetAll().objects);
-
         } catch (Exception ex) {
-
             return "Exception";
         }
 
-        usuario.setIdUser(IdUsuario);
-        usuario.setDireccion(new DireccionML(IdDireccion));
+        // Inicializar usuario y dirección
+        usuario.setIdUser(idUsuario);
+        usuario.Direccion = new DireccionML();
+        usuario.Direccion.setIdDireccion(idDireccion);
 
-        if (IdUsuario == 0 && IdDireccion == 0) { //Crear Usuario
-
-            return "Form";// Formulario Completo 
-
-        } else if (IdUsuario != 0 && IdDireccion == 0) { //detallesUsuario
-            Result result = usuarioDAOImplementation.GetDetail(IdUsuario);
-
-            if (result.correct) {
-                model.addAttribute("usuario", result.object);
-            } else {
-                model.addAttribute("usuario", null);
-            }
-            return "UsuarioDetail"; //Pagina de Detalles
-        } else if (IdUsuario != 0 && IdDireccion == -1) { //Editar Usuario
-
-            return "Form";//Formulario con solo datos de usuario para editar
-        } else if (IdUsuario != 0 && IdDireccion == -2) { //Crear direccion
-
-            return "Form"; //Solo para crear direccion
-
-        } else if (IdUsuario != 0 && IdDireccion != 0) {
-
-            Result result = direccionDAOImplementation.GetDireccion(IdDireccion);//EditarDireccion
-            if (result.correct) {
-                usuario.setDireccion((DireccionML) result.object);
-                model.addAttribute("usuario", usuario);
-            } else {
-                model.addAttribute("direccion", null);
-            }
-            return "Form"; //Solo parte de direccion editar
+        // Crear Usuario
+        if (idUsuario == 0 && idDireccion == 0) {
+            return "Form"; // Formulario completo
         }
 
-        return "EROR";
+        // Detalles de Usuario
+        if (idUsuario != 0 && idDireccion == 0) {
+            Result result = usuarioDAOImplementation.GetDetail(idUsuario);
+            model.addAttribute("usuario", result.correct ? result.object : null);
+            return "UsuarioDetail"; // Página de detalles
+        }
+
+        // Editar Usuario
+        if (idUsuario != 0 && idDireccion == -1) {
+            return "Form"; // Solo datos de usuario para editar
+        }
+
+        // Crear dirección
+        if (idUsuario != 0 && idDireccion == -2) {
+            return "Form"; // Solo para crear dirección
+        }
+
+        // Editar dirección
+        if (idUsuario != 0 && idDireccion > 0) {
+            model.addAttribute("usuario", direccionDAOImplementation.GetDireccion(idDireccion).object);
+            return "Form"; // Solo parte de dirección editar
+        }
+
+        return "ERROR";
     }
+
+    @GetMapping("/cargamasiva")
+    public String CargaMasiva() {
+        return "CargaMasiva";
+    }
+
+    @PostMapping("/cargamasiva")
+    public String CargaMasiva(@RequestParam("archivo") MultipartFile file, Model model, HttpSession session) {
+        List<ErrorCM> errores = new ArrayList<>();
+        List<UsuarioML> usuarios = new ArrayList<>();
+
+        String root = System.getProperty("user.dir");
+        String pathfile = "/src/main/resources/files/";
+        String upDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS"));
+        String finalPath = root + pathfile + upDate + file.getOriginalFilename();
+        try {
+            file.transferTo(new File(finalPath));
+        } catch (Exception ex) {
+            System.out.println(ex);
+        }
+
+        String extension = file.getOriginalFilename().split("\\.")[1];
+        Boolean valid = extension.equals("txt") || extension.equals("xlsx");
+        if (valid) {
+            if (extension.equals("txt")) {
+                usuarios = ProcesarTXT(new File(finalPath));
+            } else if (extension.equals("xlsx")) {
+                usuarios = ProcesarExcel(new File(finalPath));
+            }
+            errores = ValidarDatos(usuarios);
+        } else {
+            errores.add(new ErrorCM(1, "", "Tipo de Archvio Invalido"));
+        }
+
+        if (errores.isEmpty()) {
+            model.addAttribute("listaErrores", errores);
+            model.addAttribute("archivoCorrecto", true);
+            session.setAttribute("path", finalPath);
+
+        } else {
+            model.addAttribute("listaErrores", errores);
+            model.addAttribute("archivoCorrecto", false);
+        }
+        return "CargaMasiva";
+    }
+
+    @GetMapping("cargamasiva/procesar")
+    public String cargaMasivaProcesar(HttpSession session) {
+
+        try {
+            String path = (String) session.getAttribute("path");
+            List<UsuarioML> usuarios;
+
+            if (path.split("\\.").equals("txt")) {
+               usuarios = ProcesarTXT(new File(path));
+            } else {
+                usuarios = ProcesarExcel(new File(path));
+            }
+
+            for (UsuarioML usuario : usuarios) {
+                usuarioDAOImplementation.Add(usuario);
+            }
+            session.removeAttribute("path");
+
+        } catch (Exception ex) {
+            System.out.println(ex.getLocalizedMessage());
+        }
+
+        return "redirect:/usuario";
+    }
+
+    private List<UsuarioML> ProcesarTXT(File file) {
+        try {
+            BufferedReader bufferedReader = new BufferedReader(new FileReader(file, StandardCharsets.UTF_8));
+            String linea = "";
+            List<UsuarioML> usuarios = new ArrayList<>();
+            while ((linea = bufferedReader.readLine()) != null) {
+                String[] campos = linea.split("\\|");
+                UsuarioML usuario = new UsuarioML();
+                usuario.Rol = new RolML();
+                usuario.Direccion = new DireccionML();
+                usuario.Direccion.Colonia = new ColoniaML();
+
+                usuario.setNombreUsuario(campos[0]);
+                usuario.setApellidoPaterno(campos[1]);
+                usuario.setApellidoMaterno(campos[2]);
+                usuario.setFechaNacimiento(campos[3]);
+                usuario.setPassword(campos[4]);
+                usuario.setSexo(campos[5]);
+                usuario.setUsername(campos[6]);
+                usuario.setEmail(campos[7]);
+                usuario.setTelefono(campos[8]);
+                usuario.setCelular(campos[9]);
+                usuario.setCurp(campos[10]);
+                usuario.Rol.setIdRol(Integer.parseInt(campos[11]));
+                usuario.Direccion.setCalle(campos[12]);
+                usuario.Direccion.setNumeroInterior(campos[13]);
+                usuario.Direccion.setNumeroExterior(campos[14]);
+                usuario.Direccion.Colonia.setIdColonia(Integer.parseInt(campos[15]));
+                usuario.setImg("");
+                usuarios.add(usuario);
+            }
+            return usuarios;
+        } catch (Exception ex) {
+            System.out.println(ex);
+            return new ArrayList<>();
+        }
+
+    }
+
+    private List<UsuarioML> ProcesarExcel(File file) {
+        List<UsuarioML> usuarios = new ArrayList<>();
+
+        try (XSSFWorkbook workbook = new XSSFWorkbook(file)) {
+            DataFormatter formatter = new DataFormatter();
+            Sheet sheet = workbook.getSheetAt(0);
+            for (Row row : sheet) {
+                UsuarioML usuario = new UsuarioML();
+                usuario.setNombreUsuario(row.getCell(0) != null ? row.getCell(0).toString() : "");
+                usuario.setApellidoPaterno(row.getCell(1) != null ? row.getCell(1).toString() : "");
+                usuario.setApellidoMaterno(row.getCell(2) != null ? row.getCell(2).toString() : "");
+                usuario.setFechaNacimiento(row.getCell(3).getDateCellValue().toString());
+                usuario.setPassword(row.getCell(4).toString());
+                usuario.setSexo(row.getCell(5).toString());
+                usuario.setUsername(row.getCell(6).toString());
+                usuario.setEmail(row.getCell(7).toString());
+                usuario.setTelefono(formatter.formatCellValue(row.getCell(8)));
+                usuario.setCelular(formatter.formatCellValue(row.getCell(9)));
+                usuario.setCurp(row.getCell(10).toString());
+                usuario.Rol = new RolML();
+                usuario.Rol.setIdRol((int) row.getCell(11).getNumericCellValue());
+                usuario.Direccion = new DireccionML();
+                usuario.Direccion.setCalle(row.getCell(12).toString());
+                usuario.Direccion.setNumeroInterior(formatter.formatCellValue(row.getCell(13)));
+                usuario.Direccion.setNumeroExterior(formatter.formatCellValue(row.getCell(14)));
+                usuario.Direccion.Colonia = new ColoniaML();
+                usuario.Direccion.Colonia.setIdColonia((int) row.getCell(15).getNumericCellValue());
+
+                usuarios.add(usuario);
+            }
+
+            return usuarios;
+
+        } catch (Exception ex) {
+            System.out.println(ex);
+            return new ArrayList<>();
+        }
+
+    }
+
+    private List<ErrorCM> ValidarDatos(List<UsuarioML> usuarios) {
+        List<ErrorCM> errores = new ArrayList<>();
+        int linea = 1;
+
+        for (UsuarioML usuario : usuarios) {
+            if (usuario.getNombreUsuario() == null
+                    || "".equals(usuario.getNombreUsuario())) {
+                errores.add(new ErrorCM(linea, "".equals(usuario.getNombreUsuario()) ? "vacio" : usuario.getNombreUsuario(), "Nombre es un campo obligatorio"));
+            } else if (!OnlyLetters(usuario.getNombreUsuario())) {
+                errores.add(new ErrorCM(linea, usuario.getNombreUsuario(), "Nombre no cumple con el formato requerido"));
+            }
+            if (usuario.getApellidoPaterno() == null
+                    || "".equals(usuario.getApellidoPaterno())) {
+                errores.add(new ErrorCM(linea, "".equals(usuario.getApellidoPaterno()) ? "vacio" : usuario.getApellidoPaterno(), "Apellido Paterno es un campo obligatorio"));
+            } else if (!OnlyLetters(usuario.getApellidoPaterno())) {
+                errores.add(new ErrorCM(linea, usuario.getApellidoPaterno(), "Apellido Paterno no cumple con el formato requerido"));
+            }
+            if (usuario.getApellidoMaterno() == null
+                    || "".equals(usuario.getApellidoMaterno())) {
+                errores.add(new ErrorCM(linea, "".equals(usuario.getApellidoMaterno()) ? "vacio" : usuario.getApellidoMaterno(), "Apellido Materno es un campo obligatorio"));
+            } else if (!OnlyLetters(usuario.getApellidoMaterno())) {
+                errores.add(new ErrorCM(linea, usuario.getApellidoMaterno(), "Apellido Materno no cumple con el formato requerido"));
+            }
+
+            linea++;
+        }
+        return errores;
+    }
+
+    static boolean OnlyLetters(String text) {
+        String regexOnlyLetters = "^[A-Za-zÁÉÍÓÚáéíóúÑñ\\s]+$";
+        Pattern pattern = Pattern.compile(regexOnlyLetters);
+        Matcher matcher = pattern.matcher(text);
+        return matcher.matches();
+    }
+
 }

@@ -90,7 +90,7 @@ public class UsuarioDAOImplementation implements IUserDAO {
                             usuario.direcciones = new ArrayList<>();
 
                             DireccionML direccion = new DireccionML();
-                            direccion.setIdDirecion(idDireccion);
+                            direccion.setIdDireccion(idDireccion);
                             direccion.setCalle(resultSet.getString("Calle"));
                             direccion.setNumeroInterior(resultSet.getString("NumeroInterior"));
                             direccion.setNumeroExterior(resultSet.getString("NumeroExterior"));
@@ -125,7 +125,7 @@ public class UsuarioDAOImplementation implements IUserDAO {
                         if ((idDireccion = resultSet.getInt("idDireccion")) != 0) {
 
                             DireccionML direccion = new DireccionML();
-                            direccion.setIdDirecion(idDireccion);
+                            direccion.setIdDireccion(idDireccion);
                             direccion.setCalle(resultSet.getString("Calle"));
                             direccion.setNumeroInterior(resultSet.getString("NumeroInterior"));
                             direccion.setNumeroExterior(resultSet.getString("NumeroExterior"));
@@ -208,7 +208,7 @@ public class UsuarioDAOImplementation implements IUserDAO {
 
                             DireccionML direccion = new DireccionML();
 
-                            direccion.setIdDirecion(idDireccion);
+                            direccion.setIdDireccion(resultSet.getInt("idDireccion"));
                             direccion.setCalle(resultSet.getString("Calle"));
                             direccion.setNumeroInterior(resultSet.getString("NumeroInterior"));
                             direccion.setNumeroExterior(resultSet.getString("NumeroExterior"));

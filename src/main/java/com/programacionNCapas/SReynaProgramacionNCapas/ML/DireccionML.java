@@ -7,43 +7,40 @@ public class DireccionML {
     private String NumeroInterior;
     private String NumeroExterior;
     public ColoniaML Colonia;
-    public UsuarioML Usuario;
+   
 
     public DireccionML() {
     }
 
-    public DireccionML(
-            int IdDireccion) {
-        this.IdDireccion = IdDireccion;
-    }
+    
 
     public DireccionML(
-            int idDireccion,
-            String calle,
-            String numeroInterior,
-            String numeroExterior,
+            int IdDireccion,
+            String Calle,
+            String NumeroInterior,
+            String NumeroExterior,
             ColoniaML Colonia) {
-        this.IdDireccion = idDireccion;
-        this.Calle = calle;
-        this.NumeroExterior = numeroExterior;
-        this.NumeroInterior = numeroInterior;
+        this.IdDireccion = IdDireccion;
+        this.Calle = Calle;
+        this.NumeroExterior = NumeroExterior;
+        this.NumeroInterior = NumeroInterior;
         this.Colonia = Colonia;
     }
 
-    public void setIdDirecion(int idDireccion) {
-        this.IdDireccion = idDireccion;
+    public void setIdDireccion(int IdDireccion) {
+        this.IdDireccion = IdDireccion;
     }
 
-    public void setCalle(String calle) {
-        this.Calle = calle;
+    public void setCalle(String Calle) {
+        this.Calle = Calle;
     }
 
-    public void setNumeroExterior(String numeroExterior) {
-        this.NumeroExterior = numeroExterior;
+    public void setNumeroExterior(String NumeroExterior) {
+        this.NumeroExterior = NumeroExterior;
     }
 
-    public void setNumeroInterior(String numeroInterior) {
-        this.NumeroInterior = numeroInterior;
+    public void setNumeroInterior(String NumeroInterior) {
+        this.NumeroInterior = NumeroInterior;
     }
 
     public int getIdDireccion() {

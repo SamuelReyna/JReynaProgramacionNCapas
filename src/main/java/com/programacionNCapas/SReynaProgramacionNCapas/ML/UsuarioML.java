@@ -34,42 +34,42 @@ public class UsuarioML {
     private String Img;
     public RolML Rol;
     public List<DireccionML> direcciones = new ArrayList<>();
-    private DireccionML Direccion;
+    public DireccionML Direccion;
 
     public UsuarioML() {
     }
 
     public UsuarioML(
-            int idUser,
-            String nombreUsuario,
-            String username,
-            String apellidoPaterno,
-            String apellidoMaterno,
-            String fechaNacimiento,
-            String password,
-            String sexo,
-            String email,
-            String telefono,
-            String celular,
-            String curp
+            int IdUser,
+            String NombreUsuario,
+            String Username,
+            String ApellidoPaterno,
+            String ApellidoMaterno,
+            String FechaNacimiento,
+            String Password,
+            String Sexo,
+            String Email,
+            String Telefono,
+            String Celular,
+            String Curp
     ) {
 
-        this.IdUser = idUser;
-        this.NombreUsuario = nombreUsuario;
-        this.Username = username;
-        this.Telefono = telefono;
-        this.Celular = celular;
-        this.Curp = curp;
-        this.ApellidoPaterno = apellidoPaterno;
-        this.ApellidoMaterno = apellidoPaterno;
-        this.FechaNacimiento = fechaNacimiento;
-        this.Password = password;
-        this.Sexo = sexo;
-        this.Email = email;
+        this.IdUser = IdUser;
+        this.NombreUsuario = NombreUsuario;
+        this.Username = Username;
+        this.Telefono = Telefono;
+        this.Celular = Celular;
+        this.Curp = Curp;
+        this.ApellidoPaterno = ApellidoPaterno;
+        this.ApellidoMaterno = ApellidoMaterno;
+        this.FechaNacimiento = FechaNacimiento;
+        this.Password = Password;
+        this.Sexo = Sexo;
+        this.Email = Email;
     }
 
-    public void setIdUser(int idUser) {
-        this.IdUser = idUser;
+    public void setIdUser(int IdUser) {
+        this.IdUser = IdUser;
     }
 
     public void setNombre(String NombreUsuario) {
