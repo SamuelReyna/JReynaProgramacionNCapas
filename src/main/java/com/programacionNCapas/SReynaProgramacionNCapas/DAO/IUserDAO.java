@@ -5,7 +5,7 @@ import com.programacionNCapas.SReynaProgramacionNCapas.ML.UsuarioML;
 
 public interface IUserDAO {
 
-    Result GetAll();
+    Result GetAll(UsuarioML usuario);
 
     Result GetDetail(int idUser);
 

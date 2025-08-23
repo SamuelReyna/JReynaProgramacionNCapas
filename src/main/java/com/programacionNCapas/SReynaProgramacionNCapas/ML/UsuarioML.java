@@ -32,7 +32,7 @@ public class UsuarioML {
     private String Curp;
     private String Sexo;
     private String Img;
-    public RolML Rol;
+    public RolML Rol = new RolML();
     public List<DireccionML> direcciones = new ArrayList<>();
     public DireccionML Direccion;
 

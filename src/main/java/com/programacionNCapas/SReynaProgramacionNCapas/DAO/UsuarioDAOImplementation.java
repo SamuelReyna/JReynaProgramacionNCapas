@@ -28,13 +28,17 @@ public class UsuarioDAOImplementation implements IUserDAO {
     private JdbcTemplate jdbcTemplate;
 
     @Override
-    public Result GetAll() {
+    public Result GetAll(UsuarioML user) {
         Result result = new Result();
+                try {
 
-        try {
-            jdbcTemplate.execute("{CALL GetAllUsersWithAdress(?)}", (CallableStatementCallback<Integer>) callableStatement -> {
+            jdbcTemplate.execute("{CALL GetAllUsersWithAdress(?,?,?,?,?)}", (CallableStatementCallback<Integer>) callableStatement -> {
+                
                 callableStatement.registerOutParameter(1, java.sql.Types.REF_CURSOR);
-
+                callableStatement.setString(2, (user.getNombreUsuario() != null && !"".equals(user.getNombreUsuario())) ? user.getNombreUsuario() : "");
+                callableStatement.setString(3, (user.getApellidoPaterno() != null && !"".equals(user.getApellidoPaterno())) ? user.getApellidoPaterno() : "");
+                callableStatement.setString(4, (user.getApellidoMaterno() != null && !"".equals(user.getApellidoMaterno())) ? user.getApellidoMaterno() : "");
+                callableStatement.setInt(5, (user.Rol.getIdRol() != 0) ? user.Rol.getIdRol() : 0);
                 callableStatement.execute();
 
                 ResultSet resultSet = (ResultSet) callableStatement.getObject(1);
@@ -57,7 +61,6 @@ public class UsuarioDAOImplementation implements IUserDAO {
                         }
                     }
                     if (userExist == null) {
-
                         UsuarioML usuario = new UsuarioML();
                         RolML rol = new RolML();
 
@@ -166,7 +169,6 @@ public class UsuarioDAOImplementation implements IUserDAO {
         }
         return result;
     }
-//comentarios
 
     @Override
     public Result GetDetail(int idUser) {

@@ -68,10 +68,8 @@ public class UsuarioController {
 
     @GetMapping
     public String Index(Model model) {
-
-        Result result = usuarioDAOImplementation.GetAll();
-
         UsuarioML usuario = new UsuarioML();
+        Result result = usuarioDAOImplementation.GetAll(usuario);
 
         if (result.correct) {
             model.addAttribute("usuarios", result.objects);
@@ -115,7 +113,7 @@ public class UsuarioController {
 
         // Caso: errores de validación
         if (bindingResult.hasErrors()) {
-            model.addAttribute("usuarios", usuarioDAOImplementation.GetAll().objects);
+            model.addAttribute("usuarios", usuarioDAOImplementation.GetAll(usuario).objects);
             model.addAttribute("usuario", usuario);
             model.addAttribute("showAddModal", true);
 
@@ -147,6 +145,30 @@ public class UsuarioController {
         // Guardar usuario
         usuarioDAOImplementation.Add(usuario);
         return "redirect:/usuario";
+    }
+
+    @PostMapping()
+    public String Search(
+            @ModelAttribute("usuario") UsuarioML usuario,
+            Model model) {
+        Result result = usuarioDAOImplementation.GetAll(usuario);
+        if (result.correct) {
+            model.addAttribute("usuarios", result.objects);
+             model.addAttribute("Roles", rolDAOImplementation.GetAll().objects);
+        } else {
+            model.addAttribute("usuarios", null);
+        }
+
+        try {
+            model.addAttribute("Roles", rolDAOImplementation.GetAll().objects);
+            model.addAttribute("Paises", paisDAOImplementation.GetAll().objects);
+        } catch (Exception ex) {
+            result.ex = ex;
+            return "Exception";
+        }
+
+        model.addAttribute("usuario", usuario);
+        return "UsuarioIndex";
     }
 
     @GetMapping("/form")
@@ -211,39 +233,41 @@ public class UsuarioController {
     public String CargaMasiva(@RequestParam("archivo") MultipartFile file, Model model, HttpSession session) {
         List<ErrorCM> errores = new ArrayList<>();
         List<UsuarioML> usuarios = new ArrayList<>();
-
-        String root = System.getProperty("user.dir");
-        String pathfile = "/src/main/resources/files/";
-        String upDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS"));
-        String finalPath = root + pathfile + upDate + file.getOriginalFilename();
-        try {
-            file.transferTo(new File(finalPath));
-        } catch (Exception ex) {
-            System.out.println(ex);
-        }
-
         String extension = file.getOriginalFilename().split("\\.")[1];
         Boolean valid = extension.equals("txt") || extension.equals("xlsx");
         if (valid) {
+            String root = System.getProperty("user.dir");
+            String pathfile = "/src/main/resources/files/";
+            String upDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS"));
+            String finalPath = root + pathfile + upDate + file.getOriginalFilename();
+            try {
+                file.transferTo(new File(finalPath));
+            } catch (Exception ex) {
+                System.out.println(ex);
+            }
+
             if (extension.equals("txt")) {
                 usuarios = ProcesarTXT(new File(finalPath));
             } else if (extension.equals("xlsx")) {
                 usuarios = ProcesarExcel(new File(finalPath));
             }
             errores = ValidarDatos(usuarios);
+
+            if (errores.isEmpty()) {
+                model.addAttribute("listaErrores", errores);
+                model.addAttribute("archivoCorrecto", true);
+                session.setAttribute("path", finalPath);
+
+            } else {
+                model.addAttribute("listaErrores", errores);
+                model.addAttribute("archivoCorrecto", false);
+            }
         } else {
             errores.add(new ErrorCM(1, "", "Tipo de Archvio Invalido"));
-        }
-
-        if (errores.isEmpty()) {
-            model.addAttribute("listaErrores", errores);
-            model.addAttribute("archivoCorrecto", true);
-            session.setAttribute("path", finalPath);
-
-        } else {
             model.addAttribute("listaErrores", errores);
             model.addAttribute("archivoCorrecto", false);
         }
+
         return "CargaMasiva";
     }
 
@@ -255,7 +279,7 @@ public class UsuarioController {
             List<UsuarioML> usuarios;
 
             if (path.split("\\.").equals("txt")) {
-               usuarios = ProcesarTXT(new File(path));
+                usuarios = ProcesarTXT(new File(path));
             } else {
                 usuarios = ProcesarExcel(new File(path));
             }
@@ -374,6 +398,24 @@ public class UsuarioController {
             } else if (!OnlyLetters(usuario.getApellidoMaterno())) {
                 errores.add(new ErrorCM(linea, usuario.getApellidoMaterno(), "Apellido Materno no cumple con el formato requerido"));
             }
+            if (usuario.getPassword() == null
+                    || "".equals(usuario.getPassword())) {
+                errores.add(new ErrorCM(linea, "".equals(usuario.getPassword()) ? "vacio" : "Vacio", "Contraseña es un campo obligatorio"));
+            } else if (!validatePassword(usuario.getPassword())) {
+                errores.add(new ErrorCM(linea, usuario.getPassword(), "Contrasena no cumple con el formato requerido"));
+            }
+            if (usuario.getEmail() == null
+                    || "".equals(usuario.getEmail())) {
+                errores.add(new ErrorCM(linea, "".equals(usuario.getEmail()) ? "vacio" : usuario.getEmail(), "Email es un campo obligatorio"));
+            } else if (!validateEmail(usuario.getEmail())) {
+                errores.add(new ErrorCM(linea, usuario.getEmail(), "Email no cumple con el formato requerido"));
+            }
+            if (usuario.getUsername() == null
+                    || "".equals(usuario.getUsername())) {
+                errores.add(new ErrorCM(linea, "".equals(usuario.getUsername()) ? "vacio" : usuario.getUsername(), "Username es un campo obligatorio"));
+            } else if (!validateUsername(usuario.getUsername())) {
+                errores.add(new ErrorCM(linea, usuario.getUsername(), "Username no cumple con el formato requerido"));
+            }
 
             linea++;
         }
@@ -387,4 +429,24 @@ public class UsuarioController {
         return matcher.matches();
     }
 
+    static boolean validatePassword(String text) {
+        String regexPassword = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$";
+        Pattern pattern = Pattern.compile(regexPassword);
+        Matcher matcher = pattern.matcher(text);
+        return matcher.matches();
+    }
+
+    static boolean validateEmail(String text) {
+        String regexEmail = "(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])";
+        Pattern pattern = Pattern.compile(regexEmail);
+        Matcher matcher = pattern.matcher(text);
+        return matcher.matches();
+    }
+
+    static boolean validateUsername(String text) {
+        String regexUsername = "^(?!.*[_.]{2})[a-zA-Z0-9](?!.*[_.]{2})[a-zA-Z0-9._]{1,14}[a-zA-Z0-9]$";
+        Pattern pattern = Pattern.compile(regexUsername);
+        Matcher matcher = pattern.matcher(text);
+        return matcher.matches();
+    }
 }
