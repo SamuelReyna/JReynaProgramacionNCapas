@@ -30,10 +30,10 @@ public class UsuarioDAOImplementation implements IUserDAO {
     @Override
     public Result GetAll(UsuarioML user) {
         Result result = new Result();
-                try {
+        try {
 
             jdbcTemplate.execute("{CALL GetAllUsersWithAdress(?,?,?,?,?)}", (CallableStatementCallback<Integer>) callableStatement -> {
-                
+
                 callableStatement.registerOutParameter(1, java.sql.Types.REF_CURSOR);
                 callableStatement.setString(2, (user.getNombreUsuario() != null && !"".equals(user.getNombreUsuario())) ? user.getNombreUsuario() : "");
                 callableStatement.setString(3, (user.getApellidoPaterno() != null && !"".equals(user.getApellidoPaterno())) ? user.getApellidoPaterno() : "");
@@ -202,8 +202,8 @@ public class UsuarioDAOImplementation implements IUserDAO {
                     usuario.setImg(resultSet.getString("Img"));
                     usuario.Rol.setNombreRol(resultSet.getString("Rol"));
 
-                    int idDireccion = 0;
-                    if ((idDireccion = resultSet.getInt("idDireccion")) != 0) {
+                    int idDireccion = resultSet.getInt("idDireccion");
+                    if (idDireccion != 0) {
                         usuario.direcciones = new ArrayList<>();
 
                         do {
@@ -332,6 +332,73 @@ public class UsuarioDAOImplementation implements IUserDAO {
             result.correct = false;
             result.ex = ex;
             result.errMessage = ex.getLocalizedMessage();
+        }
+
+        return result;
+    }
+
+    @Override
+    public Result Delete(int idUser) {
+        Result result = new Result();
+
+        try {
+            result.correct = jdbcTemplate.execute("CALL DeleteUserAndDireccion(?)", (CallableStatementCallback<Boolean>) cs -> {
+                cs.setInt(1, idUser);
+                cs.execute();
+                return true;
+
+            });
+
+        } catch (Exception ex) {
+            result.errMessage = ex.getLocalizedMessage();
+            result.correct = false;
+            result.ex = ex;
+        }
+        return result;
+    }
+
+    @Override
+    public Result GetOne(int idUser) {
+        Result result = new Result();
+        try {
+            result.correct = jdbcTemplate.execute("CALL GetUserById(?,?)", (CallableStatementCallback<Boolean>) cs -> {
+                cs.registerOutParameter(1, java.sql.Types.REF_CURSOR);
+                cs.setInt(2, idUser);
+                cs.execute();
+                ResultSet resultSet = (ResultSet) cs.getObject(1);
+
+                if (resultSet.next()) {
+                    UsuarioML usuario = new UsuarioML();
+
+                    RolML rol = new RolML();
+                    usuario.Rol = rol;
+                    usuario.Direccion = new DireccionML();
+                    usuario.setIdUser(resultSet.getInt("IdUser"));
+                    usuario.setUsername(resultSet.getString("Username"));
+                    usuario.setNombreUsuario(resultSet.getString("Nombre"));
+                    usuario.setApellidoPaterno(resultSet.getString("apellidoPaterno"));
+                    usuario.setApellidoMaterno(resultSet.getString("apellidoMaterno"));
+                    usuario.setFechaNacimiento(resultSet.getString("fechaNacimiento"));
+                    usuario.setSexo(resultSet.getString("sexo"));
+                    usuario.setCelular(resultSet.getString("celular"));
+                    usuario.setTelefono(resultSet.getString("Telefono"));
+                    usuario.setCurp(resultSet.getString("curp"));
+                    usuario.setEmail(resultSet.getString("email"));
+                    usuario.setPassword(resultSet.getString("password"));
+                    usuario.setImg(resultSet.getString("Img"));
+                    usuario.Rol.setIdRol(resultSet.getInt("idRol"));
+                    usuario.Rol.setNombreRol(resultSet.getString("Rol"));
+                    usuario.Direccion.setIdDireccion(-1);
+                    result.object = usuario;
+
+                }
+                return true;
+            });
+
+        } catch (Exception ex) {
+            result.ex = ex;
+            result.errMessage = ex.getLocalizedMessage();
+            result.correct = false;
         }
 
         return result;

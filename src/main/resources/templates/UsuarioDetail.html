@@ -32,7 +32,6 @@
                     <a 
                         th:href="@{/usuario/form?(IdUsuario=${usuario.IdUser}, IdDireccion=-2)}"
                         class="btn text-bg-primary m-1"
-
                         >
                         <i class="bi bi-plus-circle-fill"></i>
                     </a>
@@ -125,7 +124,6 @@
                                                 <button   th:attr="data-id=${direccion.IdDireccion}"
                                                           class="btn text-bg-danger btnDeleteDireccion">
                                                     <i class="bi bi-trash-fill"></i>
-
                                                 </button>
                                                 <a   th:href="@{/usuario/form?(IdUsuario=${usuario.IdUser}, IdDireccion=${direccion.IdDireccion})}"
                                                    class="btn text-bg-warning">
@@ -159,7 +157,6 @@
                 }).then(res => {
                     if (res.status === 204) {
                         console.log("Eliminado con éxito");
-
                         $(this).closest("tr").remove();
                     } else {
                         console.error("Error al eliminar");

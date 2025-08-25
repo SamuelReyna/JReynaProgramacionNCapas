@@ -31,6 +31,8 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -39,6 +41,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 @Controller
@@ -154,7 +157,7 @@ public class UsuarioController {
         Result result = usuarioDAOImplementation.GetAll(usuario);
         if (result.correct) {
             model.addAttribute("usuarios", result.objects);
-             model.addAttribute("Roles", rolDAOImplementation.GetAll().objects);
+            model.addAttribute("Roles", rolDAOImplementation.GetAll().objects);
         } else {
             model.addAttribute("usuarios", null);
         }
@@ -169,6 +172,19 @@ public class UsuarioController {
 
         model.addAttribute("usuario", usuario);
         return "UsuarioIndex";
+    }
+
+    @GetMapping("DeleteUsuario")
+    @ResponseBody
+    public ResponseEntity<Object> DeleteUsuario(@RequestParam int IdUser) {
+        Result result = usuarioDAOImplementation.Delete(IdUser);
+
+        if (result.correct) {
+            return ResponseEntity.noContent().build(); // 204 No Content
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500 si falla
+        }
+
     }
 
     @GetMapping("/form")
@@ -207,6 +223,8 @@ public class UsuarioController {
 
         // Editar Usuario
         if (idUsuario != 0 && idDireccion == -1) {
+            Result result = usuarioDAOImplementation.GetOne(idUsuario);
+            model.addAttribute("usuario", result.correct ? result.object : null);
             return "Form"; // Solo datos de usuario para editar
         }
 
