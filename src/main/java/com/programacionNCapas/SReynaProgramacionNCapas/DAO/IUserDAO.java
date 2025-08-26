@@ -13,7 +13,7 @@ public interface IUserDAO {
 
     Result Add(UsuarioML usuario);
 
-    Result Update(int idUser);
+    Result Update(int idUser, UsuarioML usuario);
 
     Result Delete(int idUser);
 }

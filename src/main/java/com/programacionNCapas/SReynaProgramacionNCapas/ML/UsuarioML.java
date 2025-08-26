@@ -1,5 +1,6 @@
 package com.programacionNCapas.SReynaProgramacionNCapas.ML;
 
+import com.programacionNCapas.SReynaProgramacionNCapas.JPA.UsuarioJPA;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -35,6 +36,24 @@ public class UsuarioML {
     public RolML Rol = new RolML();
     public List<DireccionML> direcciones = new ArrayList<>();
     public DireccionML Direccion;
+    
+    public UsuarioML(UsuarioJPA usuarioJPA){
+        this.IdUser = usuarioJPA.getIdUser();
+        this.NombreUsuario = usuarioJPA.getNombreUsuario();
+        this.ApellidoPaterno=usuarioJPA.getApellidoPaterno();
+        this.ApellidoMaterno = usuarioJPA.getApellidoMaterno();
+        this.FechaNacimiento = usuarioJPA.getFechaNacimiento();
+        this.Email = usuarioJPA.getEmail();
+        this.Img = usuarioJPA.getImg();
+        this.Curp = usuarioJPA.getCurp();
+        this.Celular = usuarioJPA.getCelular();
+        this.Telefono = usuarioJPA.getTelefono();
+        this.Username = usuarioJPA.getUsername();
+        this.Sexo = usuarioJPA.getSexo();
+        this.Password = usuarioJPA.getPassword();
+        this.Rol.setIdRol(usuarioJPA.Rol.getIdRol());
+        this.Rol.setNombreRol(usuarioJPA.Rol.getNombre());
+    }
 
     public UsuarioML() {
     }

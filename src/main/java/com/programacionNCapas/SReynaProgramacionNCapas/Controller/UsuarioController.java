@@ -7,6 +7,7 @@ import com.programacionNCapas.SReynaProgramacionNCapas.DAO.MunicipioDAOImplement
 import com.programacionNCapas.SReynaProgramacionNCapas.DAO.PaisDAOImplementation;
 import com.programacionNCapas.SReynaProgramacionNCapas.DAO.RolDAOImplementation;
 import com.programacionNCapas.SReynaProgramacionNCapas.DAO.UsuarioDAOImplementation;
+import com.programacionNCapas.SReynaProgramacionNCapas.DAOJPA.UsuarioDAOJPAImplementation;
 import com.programacionNCapas.SReynaProgramacionNCapas.ML.ColoniaML;
 import com.programacionNCapas.SReynaProgramacionNCapas.ML.DireccionML;
 import com.programacionNCapas.SReynaProgramacionNCapas.ML.ErrorCM;
@@ -49,6 +50,9 @@ import org.springframework.web.multipart.MultipartFile;
 public class UsuarioController {
 
     @Autowired
+    private UsuarioDAOJPAImplementation usuarioDAOJPAImplementation;
+
+    @Autowired
     private UsuarioDAOImplementation usuarioDAOImplementation;
 
     @Autowired
@@ -72,7 +76,8 @@ public class UsuarioController {
     @GetMapping
     public String Index(Model model) {
         UsuarioML usuario = new UsuarioML();
-        Result result = usuarioDAOImplementation.GetAll(usuario);
+
+        Result result = usuarioDAOJPAImplementation.GetAll();
 
         if (result.correct) {
             model.addAttribute("usuarios", result.objects);
@@ -103,8 +108,12 @@ public class UsuarioController {
         int idUsuario = usuario.getIdUser();
         int idDireccion = usuario.Direccion.getIdDireccion();
 
+        if (idUsuario != 0 && idDireccion == -1) {
+            usuarioDAOImplementation.Update(idUsuario, usuario);
+            return "redirect:/usuario";
+        }
         // Caso: actualización de dirección
-        if (idUsuario != 0 && idDireccion != 0 && idDireccion != -2) {
+        if (idUsuario != 0 && idDireccion != 0 && idDireccion != -2 && idDireccion != -1) {
             direccionDAOImplementation.updateDireccion(idDireccion, usuario);
             return "redirect:/usuario/form?&IdUsuario=" + idUsuario + "&IdDireccion=0";
         }
@@ -113,6 +122,7 @@ public class UsuarioController {
             direccionDAOImplementation.AddDireccion(idUsuario, usuario);
             return "redirect:/usuario/form?&IdUsuario=" + idUsuario + "&IdDireccion=0";
         }
+        //Caso: Editar Usuario
 
         // Caso: errores de validación
         if (bindingResult.hasErrors()) {
@@ -146,8 +156,11 @@ public class UsuarioController {
         }
 
         // Guardar usuario
-        usuarioDAOImplementation.Add(usuario);
-        return "redirect:/usuario";
+        if (idUsuario == 0 && idDireccion == 0) {
+            usuarioDAOImplementation.Add(usuario);
+            return "redirect:/usuario";
+        }
+        return "Error";
     }
 
     @PostMapping()
