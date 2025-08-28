@@ -5,6 +5,7 @@ import com.programacionNCapas.SReynaProgramacionNCapas.ML.Result;
 import com.programacionNCapas.SReynaProgramacionNCapas.ML.UsuarioML;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
+import jakarta.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,22 +13,22 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public class UsuarioDAOJPAImplementation implements IUsuarioDAOJPA {
-    
+
     @Autowired
     private EntityManager entityManager;
-    
+
     @Override
     public Result GetAll() {
         Result result = new Result();
-        
+
         try {
             TypedQuery<UsuarioJPA> queryUsuario
-                    = entityManager.createQuery("FROM usuarios", UsuarioJPA.class);
+                    = entityManager.createQuery("FROM Usuario", UsuarioJPA.class);
             List<UsuarioJPA> usuarios = queryUsuario.getResultList();
-            
+
             result.objects = new ArrayList<>();
-            
-            for(UsuarioJPA usuario : usuarios){
+
+            for (UsuarioJPA usuario : usuarios) {
                 result.objects.add(new UsuarioML(usuario));
             }
             result.correct = true;
@@ -36,8 +37,59 @@ public class UsuarioDAOJPAImplementation implements IUsuarioDAOJPA {
             result.errMessage = ex.getLocalizedMessage();
             result.correct = false;
         }
-        
+
         return result;
     }
-    
+
+    @Override
+    public Result GetOne(int IdUser) {
+        Result result = new Result();
+        try {
+            UsuarioJPA usuarioJPA = entityManager.find(UsuarioJPA.class, IdUser);
+
+            result.object = new UsuarioML(usuarioJPA);
+            result.correct = true;
+
+        } catch (Exception ex) {
+            result.correct = false;
+            result.errMessage = ex.getLocalizedMessage();
+            result.ex = ex;
+        }
+        return result;
+    }
+
+    @Transactional
+    @Override
+    public Result Add(UsuarioML usuario) {
+        Result result = new Result();
+
+        try {
+            UsuarioJPA usuarioJPA = new UsuarioJPA(usuario);
+
+            entityManager.persist(usuarioJPA);
+            result.correct = true;
+
+        } catch (Exception ex) {
+            result.ex = ex;
+            result.errMessage = ex.getLocalizedMessage();
+            result.correct = false;
+        }
+        return result;
+    }
+
+    @Override
+    public Result Update(int IdUser, UsuarioML usuario) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public Result Delete(int IdUser) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public Result LogicalDelete(int IdUser) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
 }

@@ -1,5 +1,7 @@
 package com.programacionNCapas.SReynaProgramacionNCapas.JPA;
 
+import com.programacionNCapas.SReynaProgramacionNCapas.ML.DireccionML;
+import com.programacionNCapas.SReynaProgramacionNCapas.ML.UsuarioML;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,9 +14,10 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
-@Entity(name="usuarios")
+@Entity(name = "Usuario")
 @Table(name = "usuarios")
 public class UsuarioJPA {
 
@@ -33,7 +36,7 @@ public class UsuarioJPA {
     @Column(name = "password")
     private String Password;
     @Column(name = "fechanacimiento")
-    private String FechaNacimiento;
+    private Date FechaNacimiento;
     @Column(name = "email", unique = true)
     private String Email;
     @Column(name = "telefono")
@@ -48,13 +51,41 @@ public class UsuarioJPA {
     @Column(name = "img")
     private String Img;
     @ManyToOne
-    @JoinColumn(name="idrol")
+    @JoinColumn(name = "idrol")
     public RolJPA Rol = new RolJPA();
-    
-    @OneToMany(mappedBy= "Usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+
+    @OneToMany(mappedBy = "Usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     public List<DireccionJPA> Direcciones = new ArrayList<>();
 
     public UsuarioJPA() {
+    }
+
+    public UsuarioJPA(UsuarioML usuarioML) {
+        this.NombreUsuario = usuarioML.getNombreUsuario();
+        this.ApellidoPaterno = usuarioML.getApellidoPaterno();
+        this.ApellidoMaterno = usuarioML.getApellidoMaterno();
+        this.Username = usuarioML.getUsername();
+        this.Telefono = usuarioML.getTelefono();
+        this.Celular = usuarioML.getCelular();
+        this.FechaNacimiento = usuarioML.getFechaNacimiento();
+        this.Curp = usuarioML.getCurp();
+        this.Sexo = usuarioML.getSexo();
+        this.Email = usuarioML.getEmail();
+        this.Password = usuarioML.getPassword();
+        this.Img = usuarioML.getImg();
+        this.Rol = new RolJPA();
+        this.Rol.setIdRol(usuarioML.Rol.getIdRol());
+        for (DireccionML direccione : usuarioML.direcciones) {
+            DireccionJPA direccion = new DireccionJPA();
+            direccion.setCalle(direccione.getCalle());
+            direccion.setNumeroExterior(direccione.getNumeroExterior());
+            direccion.setNumeroInterior(direccione.getNumeroInterior());
+            direccion.Colonia = new ColoniaJPA();
+            direccion.Colonia.setIdColonia(direccione.Colonia.getIdColonia());
+            direccion.Usuario = this;
+
+            Direcciones.add(direccion);
+        }
     }
 
     public int getIdUser() {
@@ -105,11 +136,11 @@ public class UsuarioJPA {
         this.Password = Password;
     }
 
-    public String getFechaNacimiento() {
+    public Date getFechaNacimiento() {
         return FechaNacimiento;
     }
 
-    public void setFechaNacimiento(String FechaNacimiento) {
+    public void setFechaNacimiento(Date FechaNacimiento) {
         this.FechaNacimiento = FechaNacimiento;
     }
 
@@ -169,7 +200,7 @@ public class UsuarioJPA {
         this.Rol = Rol;
     }
 
-    public UsuarioJPA(int IdUser, String Username, String NombreUsuario, String ApellidoMaterno, String ApellidoPaterno, String Password, String FechaNacimiento, String Email, String Telefono, String Celular, String Curp, String Sexo, String Img) {
+    public UsuarioJPA(int IdUser, String Username, String NombreUsuario, String ApellidoMaterno, String ApellidoPaterno, String Password, Date FechaNacimiento, String Email, String Telefono, String Celular, String Curp, String Sexo, String Img) {
         this.IdUser = IdUser;
         this.Username = Username;
         this.NombreUsuario = NombreUsuario;

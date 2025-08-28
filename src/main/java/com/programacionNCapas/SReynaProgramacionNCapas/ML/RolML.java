@@ -1,5 +1,7 @@
 package com.programacionNCapas.SReynaProgramacionNCapas.ML;
 
+import com.programacionNCapas.SReynaProgramacionNCapas.JPA.RolJPA;
+
 public class RolML {
 
     private String NombreRol;
@@ -8,6 +10,11 @@ public class RolML {
     public RolML() {
     }
 
+    public RolML(RolJPA rolJPA){
+        this.IdRol = rolJPA.getIdRol();
+        this.NombreRol = rolJPA.getNombre();
+    }
+    
     public RolML(
             String NombreRol,
             int IdRol) {

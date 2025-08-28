@@ -1,5 +1,7 @@
 package com.programacionNCapas.SReynaProgramacionNCapas.ML;
 
+import com.programacionNCapas.SReynaProgramacionNCapas.JPA.MunicipioJPA;
+
 public class MunicipioML {
 
     private int IdMunicipio;
@@ -15,6 +17,10 @@ public class MunicipioML {
     }
 
     public MunicipioML() {
+    }
+    public MunicipioML(MunicipioJPA municipioJPA){
+        this.IdMunicipio = municipioJPA.getIdMunicipio();
+        this.Nombre = municipioJPA.getNombre();
     }
 
     public MunicipioML(int idMunicipio,

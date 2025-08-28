@@ -1,11 +1,18 @@
 package com.programacionNCapas.SReynaProgramacionNCapas.ML;
 
+import com.programacionNCapas.SReynaProgramacionNCapas.JPA.PaisJPA;
+
 public class PaisML {
 
     private int IdPais;
     private String Nombre;
 
     public PaisML() {
+    }
+
+    public PaisML(PaisJPA paisJPA) {
+        this.IdPais = paisJPA.getIdPais();
+        this.Nombre = paisJPA.getNombre();
     }
 
     public PaisML(

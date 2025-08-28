@@ -7,6 +7,11 @@ import com.programacionNCapas.SReynaProgramacionNCapas.DAO.MunicipioDAOImplement
 import com.programacionNCapas.SReynaProgramacionNCapas.DAO.PaisDAOImplementation;
 import com.programacionNCapas.SReynaProgramacionNCapas.DAO.RolDAOImplementation;
 import com.programacionNCapas.SReynaProgramacionNCapas.DAO.UsuarioDAOImplementation;
+import com.programacionNCapas.SReynaProgramacionNCapas.DAOJPA.ColoniaDAOJPAImplementation;
+import com.programacionNCapas.SReynaProgramacionNCapas.DAOJPA.EstadoDAOJPAImplementation;
+import com.programacionNCapas.SReynaProgramacionNCapas.DAOJPA.MunicipioDAOJPAImplementation;
+import com.programacionNCapas.SReynaProgramacionNCapas.DAOJPA.PaisDAOJPAImplementation;
+import com.programacionNCapas.SReynaProgramacionNCapas.DAOJPA.RolDAOJPAImplementation;
 import com.programacionNCapas.SReynaProgramacionNCapas.DAOJPA.UsuarioDAOJPAImplementation;
 import com.programacionNCapas.SReynaProgramacionNCapas.ML.ColoniaML;
 import com.programacionNCapas.SReynaProgramacionNCapas.ML.DireccionML;
@@ -20,6 +25,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -53,22 +59,31 @@ public class UsuarioController {
     private UsuarioDAOJPAImplementation usuarioDAOJPAImplementation;
 
     @Autowired
+    private RolDAOJPAImplementation rolDAOJPAImplementation;
+
+    @Autowired
+    private EstadoDAOJPAImplementation estadoDAOJPAImplementation;
+
+    @Autowired
+    private PaisDAOJPAImplementation paisDAOJPAImplementation;
+
+    @Autowired
     private UsuarioDAOImplementation usuarioDAOImplementation;
 
     @Autowired
-    private RolDAOImplementation rolDAOImplementation;
-
-    @Autowired
-    private PaisDAOImplementation paisDAOImplementation;
-
-    @Autowired
     private EstadoDAOImplementation estadoDAOImplementation;
+
+    @Autowired
+    private MunicipioDAOJPAImplementation municipioDAOJPAImplementation;
 
     @Autowired
     private MunicipioDAOImplementation municipioDAOImplementation;
 
     @Autowired
     private ColoniaDAOImplementation coloniaDAOImplementation;
+
+    @Autowired
+    private ColoniaDAOJPAImplementation coloniaDAOJPAImplementation;
 
     @Autowired
     private DireccionDAOImplementation direccionDAOImplementation;
@@ -84,15 +99,6 @@ public class UsuarioController {
         } else {
             model.addAttribute("usuarios", null);
         }
-
-        try {
-            model.addAttribute("Roles", rolDAOImplementation.GetAll().objects);
-            model.addAttribute("Paises", paisDAOImplementation.GetAll().objects);
-        } catch (Exception ex) {
-            result.ex = ex;
-            return "Exception";
-        }
-
         model.addAttribute("usuario", usuario);
 
         return "UsuarioIndex";
@@ -125,19 +131,7 @@ public class UsuarioController {
         //Caso: Editar Usuario
 
         // Caso: errores de validación
-        if (bindingResult.hasErrors()) {
-            model.addAttribute("usuarios", usuarioDAOImplementation.GetAll(usuario).objects);
-            model.addAttribute("usuario", usuario);
-            model.addAttribute("showAddModal", true);
 
-            try {
-                model.addAttribute("Roles", rolDAOImplementation.GetAll().objects);
-                model.addAttribute("Paises", paisDAOImplementation.GetAll().objects);
-            } catch (Exception ex) {
-                return "Exception";
-            }
-            return "Form";
-        }
 
         // Procesar imagen
         if (imagen != null && !imagen.isEmpty()) {
@@ -157,7 +151,7 @@ public class UsuarioController {
 
         // Guardar usuario
         if (idUsuario == 0 && idDireccion == 0) {
-            usuarioDAOImplementation.Add(usuario);
+            usuarioDAOJPAImplementation.Add(usuario);
             return "redirect:/usuario";
         }
         return "Error";
@@ -170,16 +164,18 @@ public class UsuarioController {
         Result result = usuarioDAOImplementation.GetAll(usuario);
         if (result.correct) {
             model.addAttribute("usuarios", result.objects);
-            model.addAttribute("Roles", rolDAOImplementation.GetAll().objects);
+            model.addAttribute("Roles", rolDAOJPAImplementation.GetAll().objects);
         } else {
             model.addAttribute("usuarios", null);
         }
 
         try {
-            model.addAttribute("Roles", rolDAOImplementation.GetAll().objects);
-            model.addAttribute("Paises", paisDAOImplementation.GetAll().objects);
+            model.addAttribute("Roles", rolDAOJPAImplementation.GetAll().objects);
+            model.addAttribute("Paises", paisDAOJPAImplementation.GetAll().objects);
         } catch (Exception ex) {
             result.ex = ex;
+            result.errMessage = ex.getLocalizedMessage();
+            result.correct = false;
             return "Exception";
         }
 
@@ -208,11 +204,11 @@ public class UsuarioController {
             Model model
     ) {
         try {
-            model.addAttribute("Roles", rolDAOImplementation.GetAll().objects);
-            model.addAttribute("Paises", paisDAOImplementation.GetAll().objects);
-            model.addAttribute("Colonias", coloniaDAOImplementation.GetAll().objects);
-            model.addAttribute("Estados", estadoDAOImplementation.GetAll().objects);
-            model.addAttribute("Municipios", municipioDAOImplementation.GetAll().objects);
+            model.addAttribute("Roles", rolDAOJPAImplementation.GetAll().objects);
+            model.addAttribute("Paises", paisDAOJPAImplementation.GetAll().objects);
+            model.addAttribute("Colonias", coloniaDAOJPAImplementation.GetAll().objects);
+            model.addAttribute("Estados", estadoDAOJPAImplementation.GetAll().objects);
+            model.addAttribute("Municipios", municipioDAOJPAImplementation.GetAll().objects);
         } catch (Exception ex) {
             return "Exception";
         }
@@ -229,7 +225,7 @@ public class UsuarioController {
 
         // Detalles de Usuario
         if (idUsuario != 0 && idDireccion == 0) {
-            Result result = usuarioDAOImplementation.GetDetail(idUsuario);
+            Result result = usuarioDAOJPAImplementation.GetOne(idUsuario);
             model.addAttribute("usuario", result.correct ? result.object : null);
             return "UsuarioDetail"; // Página de detalles
         }
@@ -342,7 +338,9 @@ public class UsuarioController {
                 usuario.setNombreUsuario(campos[0]);
                 usuario.setApellidoPaterno(campos[1]);
                 usuario.setApellidoMaterno(campos[2]);
-                usuario.setFechaNacimiento(campos[3]);
+                SimpleDateFormat formatter = new SimpleDateFormat("dd-MMM-yy");
+
+                usuario.setFechaNacimiento(formatter.parse(campos[3]));
                 usuario.setPassword(campos[4]);
                 usuario.setSexo(campos[5]);
                 usuario.setUsername(campos[6]);
@@ -377,7 +375,7 @@ public class UsuarioController {
                 usuario.setNombreUsuario(row.getCell(0) != null ? row.getCell(0).toString() : "");
                 usuario.setApellidoPaterno(row.getCell(1) != null ? row.getCell(1).toString() : "");
                 usuario.setApellidoMaterno(row.getCell(2) != null ? row.getCell(2).toString() : "");
-                usuario.setFechaNacimiento(row.getCell(3).getDateCellValue().toString());
+                usuario.setFechaNacimiento(row.getCell(3).getDateCellValue());
                 usuario.setPassword(row.getCell(4).toString());
                 usuario.setSexo(row.getCell(5).toString());
                 usuario.setUsername(row.getCell(6).toString());

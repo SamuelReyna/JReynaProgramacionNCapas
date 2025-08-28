@@ -1,5 +1,7 @@
 package com.programacionNCapas.SReynaProgramacionNCapas.ML;
 
+import com.programacionNCapas.SReynaProgramacionNCapas.JPA.ColoniaJPA;
+
 public class ColoniaML {
 
     private int IdColonia;
@@ -14,6 +16,12 @@ public class ColoniaML {
         this.IdColonia = IdColonia;
         this.Nombre = Nombre;
         this.CodigoPostal = CodigoPostal;
+    }
+
+    public ColoniaML(ColoniaJPA coloniaJPA) {
+        this.IdColonia = coloniaJPA.getIdColonia();
+        this.CodigoPostal = coloniaJPA.getCodigoPostal();
+        this.Nombre = coloniaJPA.getNombre();
     }
 
     public int getIdColonia() {

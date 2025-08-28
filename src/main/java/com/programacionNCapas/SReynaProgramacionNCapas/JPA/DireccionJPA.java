@@ -10,7 +10,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
-@Entity(name="direccion")
+@Entity(name="Direccion")
 @Table(name = "direccion")
 public class DireccionJPA {
 

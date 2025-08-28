@@ -10,6 +10,7 @@ import com.programacionNCapas.SReynaProgramacionNCapas.ML.RolML;
 import com.programacionNCapas.SReynaProgramacionNCapas.ML.UsuarioML;
 import java.io.StringReader;
 import java.sql.Clob;
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -43,9 +44,6 @@ public class UsuarioDAOImplementation implements IUserDAO {
 
                 ResultSet resultSet = (ResultSet) callableStatement.getObject(1);
 
-                SimpleDateFormat parser = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); // formato de BD
-                SimpleDateFormat formatoSalida = new SimpleDateFormat("dd-MMM-yy", Locale.ENGLISH);
-
                 List<UsuarioML> usuarios = new ArrayList<>();
                 result.objects = new ArrayList<>();
                 while (resultSet.next()) {
@@ -64,19 +62,12 @@ public class UsuarioDAOImplementation implements IUserDAO {
                         UsuarioML usuario = new UsuarioML();
                         RolML rol = new RolML();
 
-                        String fechaFormateada = "";
-                        try {
-                            fechaFormateada = formatoSalida.format(parser.parse(resultSet.getString("fechaNacimiento")));
-                        } catch (Exception e) {
-                            fechaFormateada = usuario.getFechaNacimiento();
-                        }
-
                         usuario.Rol = rol;
                         usuario.setIdUser(resultSet.getInt("idUser"));
                         usuario.setNombre(resultSet.getString("Nombre"));
                         usuario.setApellidoPaterno(resultSet.getString("ApellidoPaterno"));
                         usuario.setApellidoMaterno(resultSet.getString("ApellidoMaterno"));
-                        usuario.setFechaNacimiento(fechaFormateada);
+                        usuario.setFechaNacimiento(usuario.getFechaNacimiento());
                         usuario.setPassword(resultSet.getString("password"));
                         usuario.setSexo(resultSet.getString("sexo"));
                         usuario.setTelefono(resultSet.getString("telefono"));
@@ -192,7 +183,7 @@ public class UsuarioDAOImplementation implements IUserDAO {
                     usuario.setNombreUsuario(resultSet.getString("Nombre"));
                     usuario.setApellidoPaterno(resultSet.getString("apellidoPaterno"));
                     usuario.setApellidoMaterno(resultSet.getString("apellidoMaterno"));
-                    usuario.setFechaNacimiento(resultSet.getString("fechaNacimiento"));
+                    usuario.setFechaNacimiento(resultSet.getDate("fechaNacimiento"));
                     usuario.setSexo(resultSet.getString("sexo"));
                     usuario.setCelular(resultSet.getString("celular"));
                     usuario.setTelefono(resultSet.getString("Telefono"));
@@ -271,7 +262,7 @@ public class UsuarioDAOImplementation implements IUserDAO {
                         callableStatement.setString(1, usuario.getNombreUsuario());
                         callableStatement.setString(2, usuario.getApellidoPaterno());
                         callableStatement.setString(3, usuario.getApellidoMaterno());
-                        callableStatement.setDate(4, java.sql.Date.valueOf(usuario.getFechaNacimiento()));
+                        callableStatement.setDate(4, (Date) usuario.getFechaNacimiento());
                         callableStatement.setString(5, usuario.getPassword());
                         callableStatement.setString(6, usuario.getSexo());
                         callableStatement.setString(7, usuario.getUsername());
@@ -312,7 +303,7 @@ public class UsuarioDAOImplementation implements IUserDAO {
                 cs.setString(1, usuario.getNombreUsuario());
                 cs.setString(2, usuario.getApellidoPaterno());
                 cs.setString(3, usuario.getApellidoMaterno());
-                cs.setString(4, usuario.getFechaNacimiento());
+                cs.setDate(4, (Date) usuario.getFechaNacimiento());
                 cs.setString(5, usuario.getPassword());
                 cs.setString(6, usuario.getSexo());
                 cs.setString(7, usuario.getUsername());
@@ -365,16 +356,9 @@ public class UsuarioDAOImplementation implements IUserDAO {
                 cs.execute();
                 ResultSet resultSet = (ResultSet) cs.getObject(1);
 
-                SimpleDateFormat parser = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); // formato de BD
-                SimpleDateFormat formatoSalida = new SimpleDateFormat("MM/dd/yyy", Locale.ENGLISH);
                 if (resultSet.next()) {
                     UsuarioML usuario = new UsuarioML();
-                    String fechaFormateada = "";
-                    try {
-                        fechaFormateada = formatoSalida.format(parser.parse(resultSet.getString("fechaNacimiento")));
-                    } catch (Exception e) {
-                        fechaFormateada = usuario.getFechaNacimiento();
-                    }
+
                     RolML rol = new RolML();
                     usuario.Rol = rol;
                     usuario.Direccion = new DireccionML();
@@ -383,7 +367,7 @@ public class UsuarioDAOImplementation implements IUserDAO {
                     usuario.setNombreUsuario(resultSet.getString("Nombre"));
                     usuario.setApellidoPaterno(resultSet.getString("apellidoPaterno"));
                     usuario.setApellidoMaterno(resultSet.getString("apellidoMaterno"));
-                    usuario.setFechaNacimiento(fechaFormateada);
+                    usuario.setFechaNacimiento(usuario.getFechaNacimiento());
                     usuario.setSexo(resultSet.getString("sexo").trim());
                     usuario.setCelular(resultSet.getString("celular"));
                     usuario.setTelefono(resultSet.getString("Telefono"));
