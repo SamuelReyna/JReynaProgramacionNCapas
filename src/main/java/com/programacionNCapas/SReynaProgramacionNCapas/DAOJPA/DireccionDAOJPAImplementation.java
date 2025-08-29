@@ -55,14 +55,45 @@ public class DireccionDAOJPAImplementation implements IDireccionDAOJPA {
         return result;
     }
 
+    @Transactional
     @Override
-    public Result Update(DireccionML direccion, int IdDireccion) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public Result Update(UsuarioML usuario) {
+        Result result = new Result();
+
+        try {
+            DireccionJPA direccionJPA = new DireccionJPA(usuario);
+            direccionJPA.Usuario = new UsuarioJPA();
+            direccionJPA.Usuario.setIdUser(usuario.getIdUser());
+            direccionJPA.Colonia = new ColoniaJPA();
+            direccionJPA.Colonia.setIdColonia(usuario.Direccion.Colonia.getIdColonia());
+
+            entityManager.merge(direccionJPA);
+
+            result.correct = true;
+        } catch (Exception ex) {
+            result.correct = false;
+            result.errMessage = ex.getLocalizedMessage();
+            result.ex = ex;
+        }
+        return result;
+
     }
 
     @Override
     public Result GetOne(int IdDireccion) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        Result result = new Result();
+        try {
+//            UsuarioJPA usuarioJPA = entityManager.find(UsuarioJPA.class, IdUsuario);
+            DireccionJPA direccionJPA = entityManager.find(DireccionJPA.class, IdDireccion);
+//            usuarioJPA.Direcciones.add(direccionJPA);
+            result.object = new DireccionML(direccionJPA);
+            result.correct = true;
+        } catch (Exception ex) {
+            result.correct = false;
+            result.errMessage = ex.getLocalizedMessage();
+            result.ex = ex;
+        }
+        return result;
     }
 
 }

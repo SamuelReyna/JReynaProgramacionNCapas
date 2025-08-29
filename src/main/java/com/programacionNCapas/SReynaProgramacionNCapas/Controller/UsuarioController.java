@@ -112,12 +112,12 @@ public class UsuarioController {
         int idDireccion = usuario.Direccion.getIdDireccion();
 
         if (idUsuario != 0 && idDireccion == -1) {
-            usuarioDAOJPAImplementation.Update(idUsuario, usuario);
+            usuarioDAOJPAImplementation.Update(usuario);
             return "redirect:/usuario";
         }
         // Caso: actualización de dirección
         if (idUsuario != 0 && idDireccion != 0 && idDireccion != -2 && idDireccion != -1) {
-            direccionDAOImplementation.updateDireccion(idDireccion, usuario);
+            direccionDAOJPAImplementation.Update(usuario);
             return "redirect:/usuario/form?&IdUsuario=" + idUsuario + "&IdDireccion=0";
         }
         //Caso: crear dirección
@@ -247,7 +247,13 @@ public class UsuarioController {
 
         // Editar dirección
         if (idUsuario != 0 && idDireccion > 0) {
-            model.addAttribute("usuario", direccionDAOImplementation.GetDireccion(idDireccion).object);
+            DireccionML direccionML = (DireccionML) direccionDAOJPAImplementation.GetOne(idDireccion).object;
+
+            usuario.setIdUser(idUsuario);
+            usuario.Direccion = new DireccionML();
+            usuario.Direccion = direccionML;
+
+            model.addAttribute("usuario", usuario);
             return "Form"; // Solo parte de dirección editar
         }
 

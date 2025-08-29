@@ -52,7 +52,7 @@ public class UsuarioJPA {
     @Column(name = "img")
     private String Img;
     @Column(name = "estatus")
-    private int Estatus;
+    private int Estatus = 1;
     @ManyToOne
     @JoinColumn(name = "idrol")
     public RolJPA Rol = new RolJPA();
@@ -64,6 +64,7 @@ public class UsuarioJPA {
     }
 
     public UsuarioJPA(UsuarioML usuarioML) {
+        this.IdUser = usuarioML.getIdUser();
         this.NombreUsuario = usuarioML.getNombreUsuario();
         this.ApellidoPaterno = usuarioML.getApellidoPaterno();
         this.ApellidoMaterno = usuarioML.getApellidoMaterno();

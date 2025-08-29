@@ -1,5 +1,7 @@
 package com.programacionNCapas.SReynaProgramacionNCapas.ML;
 
+import com.programacionNCapas.SReynaProgramacionNCapas.JPA.DireccionJPA;
+
 public class DireccionML {
 
     private int IdDireccion;
@@ -9,6 +11,23 @@ public class DireccionML {
     public ColoniaML Colonia;
 
     public DireccionML() {
+    }
+
+    public DireccionML(DireccionJPA direccionJPA) {
+        this.IdDireccion = direccionJPA.getIdDireccion();
+        this.Calle = direccionJPA.getCalle();
+        this.NumeroInterior = direccionJPA.getNumeroInterior();
+        this.NumeroExterior = direccionJPA.getNumeroExterior();
+        
+        this.Colonia = new ColoniaML();
+        this.Colonia.Municipio = new MunicipioML();
+        this.Colonia.Municipio.estado = new EstadoML();
+        this.Colonia.Municipio.estado.pais = new PaisML();
+        this.Colonia.Municipio.setIdMunicipio(direccionJPA.Colonia.Municipio.getIdMunicipio());
+        this.Colonia.setIdColonia(direccionJPA.Colonia.getIdColonia());
+        this.Colonia.Municipio.estado.setIdEstado(direccionJPA.Colonia.Municipio.Estado.getIdEstado());
+        this.Colonia.Municipio.estado.pais.setIdPais(direccionJPA.Colonia.Municipio.Estado.Pais.getIdPais());
+        this.Colonia.setCodigoPostal(direccionJPA.Colonia.getCodigoPostal());
     }
 
     public DireccionML(

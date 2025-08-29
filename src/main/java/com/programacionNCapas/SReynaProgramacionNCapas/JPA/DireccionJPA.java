@@ -33,6 +33,7 @@ public class DireccionJPA {
     public ColoniaJPA Colonia;
 
     public DireccionJPA(UsuarioML usuario) {
+        this.IdDireccion = usuario.Direccion.getIdDireccion();
         this.NumeroExterior = usuario.Direccion.getNumeroExterior();
         this.Calle = usuario.Direccion.getCalle();
         this.NumeroInterior = usuario.Direccion.getNumeroInterior();

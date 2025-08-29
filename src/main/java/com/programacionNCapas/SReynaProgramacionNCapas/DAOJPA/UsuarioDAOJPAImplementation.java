@@ -77,10 +77,12 @@ public class UsuarioDAOJPAImplementation implements IUsuarioDAOJPA {
 
     @Transactional
     @Override
-    public Result Update(int IdUser, UsuarioML usuario) {
+    public Result Update(UsuarioML usuario) {
         Result result = new Result();
         try {
             UsuarioJPA usuarioJPA = new UsuarioJPA(usuario);
+            UsuarioJPA usuarioBD = entityManager.find(UsuarioJPA.class, usuario.getIdUser());
+            usuarioJPA.Direcciones = usuarioBD.Direcciones;
             entityManager.merge(usuarioJPA);
             result.correct = true;
         } catch (Exception ex) {

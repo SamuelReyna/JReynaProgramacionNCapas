@@ -11,7 +11,7 @@ public interface IUsuarioDAOJPA {
     
     Result Add(UsuarioML usuario);
 
-    Result Update(int IdUser, UsuarioML usuario);
+    Result Update(UsuarioML usuario);
 
     Result Delete(int IdUser);
     
