@@ -6,10 +6,11 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import org.springframework.format.annotation.DateTimeFormat;
 
 public class UsuarioML {
 
@@ -29,7 +30,8 @@ public class UsuarioML {
     @Size(min = 8)
     @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$", message = "Invalid content type")
     private String Password;
-    private Date FechaNacimiento;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate FechaNacimiento;
     @Pattern(regexp = "(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])", message = "Invalid content type")
     private String Email;
     private String Telefono;
@@ -37,17 +39,17 @@ public class UsuarioML {
     private String Curp;
     private String Sexo;
     private String Img;
+    private int Estatus;
     public RolML Rol = new RolML();
     public List<DireccionML> direcciones = new ArrayList<>();
     public DireccionML Direccion;
 
-    public UsuarioML(UsuarioJPA usuarioJPA) throws ParseException {
+    public UsuarioML(UsuarioJPA usuarioJPA) {
         this.IdUser = usuarioJPA.getIdUser();
         this.NombreUsuario = usuarioJPA.getNombreUsuario();
         this.ApellidoPaterno = usuarioJPA.getApellidoPaterno();
         this.ApellidoMaterno = usuarioJPA.getApellidoMaterno();
-        java.sql.Date fechaSql = new java.sql.Date(usuarioJPA.getFechaNacimiento().getTime());
-        this.FechaNacimiento = fechaSql;
+        this.FechaNacimiento = usuarioJPA.getFechaNacimiento();
         this.Email = usuarioJPA.getEmail();
         this.Img = usuarioJPA.getImg();
         this.Curp = usuarioJPA.getCurp();
@@ -60,32 +62,38 @@ public class UsuarioML {
         this.Rol.setNombreRol(usuarioJPA.Rol.getNombre());
         if (usuarioJPA.Direcciones != null && !usuarioJPA.Direcciones.isEmpty()) {
             this.direcciones = new ArrayList<>();
-            for (DireccionJPA direccione : usuarioJPA.Direcciones) {
-                DireccionML direccion = new DireccionML();
 
-                direccion.setCalle(direccione.getCalle());
-                direccion.setNumeroExterior(direccione.getNumeroExterior());
-                direccion.setNumeroInterior(direccione.getNumeroInterior());
-                direccion.setIdDireccion(direccione.getIdDireccion());
+            if (usuarioJPA.Direcciones.get(0).getIdDireccion() == -1) {
+                this.direcciones = null;
 
-                direccion.Colonia = new ColoniaML();
-                direccion.Colonia.setIdColonia(direccione.Colonia.getIdColonia());
-                direccion.Colonia.setNombre(direccione.Colonia.getNombre());
-                direccion.Colonia.setCodigoPostal(direccione.Colonia.getCodigoPostal());
+            } else {
+                for (DireccionJPA direccione : usuarioJPA.Direcciones) {
+                    DireccionML direccion = new DireccionML();
 
-                direccion.Colonia.Municipio = new MunicipioML();
-                direccion.Colonia.Municipio.setIdMunicipio(direccione.Colonia.Municipio.getIdMunicipio());
-                direccion.Colonia.Municipio.setNombre(direccione.Colonia.Municipio.getNombre());
+                    direccion.setCalle(direccione.getCalle());
+                    direccion.setNumeroExterior(direccione.getNumeroExterior());
+                    direccion.setNumeroInterior(direccione.getNumeroInterior());
+                    direccion.setIdDireccion(direccione.getIdDireccion());
 
-                direccion.Colonia.Municipio.estado = new EstadoML();
-                direccion.Colonia.Municipio.estado.setIdEstado(direccione.Colonia.Municipio.Estado.getIdEstado());
-                direccion.Colonia.Municipio.estado.setNombre(direccione.Colonia.Municipio.Estado.getNombre());
+                    direccion.Colonia = new ColoniaML();
+                    direccion.Colonia.setIdColonia(direccione.Colonia.getIdColonia());
+                    direccion.Colonia.setNombre(direccione.Colonia.getNombre());
+                    direccion.Colonia.setCodigoPostal(direccione.Colonia.getCodigoPostal());
 
-                direccion.Colonia.Municipio.estado.pais = new PaisML();
-                direccion.Colonia.Municipio.estado.pais.setIdPais(direccione.Colonia.Municipio.Estado.Pais.getIdPais());
-                direccion.Colonia.Municipio.estado.pais.setNombre(direccione.Colonia.Municipio.Estado.Pais.getNombre());
+                    direccion.Colonia.Municipio = new MunicipioML();
+                    direccion.Colonia.Municipio.setIdMunicipio(direccione.Colonia.Municipio.getIdMunicipio());
+                    direccion.Colonia.Municipio.setNombre(direccione.Colonia.Municipio.getNombre());
 
-                this.direcciones.add(direccion);
+                    direccion.Colonia.Municipio.estado = new EstadoML();
+                    direccion.Colonia.Municipio.estado.setIdEstado(direccione.Colonia.Municipio.Estado.getIdEstado());
+                    direccion.Colonia.Municipio.estado.setNombre(direccione.Colonia.Municipio.Estado.getNombre());
+
+                    direccion.Colonia.Municipio.estado.pais = new PaisML();
+                    direccion.Colonia.Municipio.estado.pais.setIdPais(direccione.Colonia.Municipio.Estado.Pais.getIdPais());
+                    direccion.Colonia.Municipio.estado.pais.setNombre(direccione.Colonia.Municipio.Estado.Pais.getNombre());
+
+                    this.direcciones.add(direccion);
+                }
             }
         }
     }
@@ -99,13 +107,14 @@ public class UsuarioML {
             String Username,
             String ApellidoPaterno,
             String ApellidoMaterno,
-            Date FechaNacimiento,
+            LocalDate FechaNacimiento,
             String Password,
             String Sexo,
             String Email,
             String Telefono,
             String Celular,
-            String Curp
+            String Curp,
+            int Estatus
     ) {
 
         this.IdUser = IdUser;
@@ -120,6 +129,7 @@ public class UsuarioML {
         this.Password = Password;
         this.Sexo = Sexo;
         this.Email = Email;
+        this.Estatus = Estatus;
     }
 
     public void setIdUser(int IdUser) {
@@ -190,6 +200,14 @@ public class UsuarioML {
         this.Email = Email;
     }
 
+    public int getEstatus() {
+        return Estatus;
+    }
+
+    public void setEstatus(int Estatus) {
+        this.Estatus = Estatus;
+    }
+
     public void setTelefono(String Telefono) {
         this.Telefono = Telefono;
     }
@@ -202,7 +220,7 @@ public class UsuarioML {
         this.Curp = Curp;
     }
 
-    public void setFechaNacimiento(Date FechaNacimiento) {
+    public void setFechaNacimiento(LocalDate FechaNacimiento) {
         this.FechaNacimiento = FechaNacimiento;
     }
 
@@ -214,7 +232,7 @@ public class UsuarioML {
         return IdUser;
     }
 
-    public Date getFechaNacimiento() {
+    public LocalDate getFechaNacimiento() {
         return FechaNacimiento;
     }
 

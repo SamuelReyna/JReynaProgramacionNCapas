@@ -1,18 +1,18 @@
 package com.programacionNCapas.SReynaProgramacionNCapas.Controller;
 
-import com.programacionNCapas.SReynaProgramacionNCapas.DAO.ColoniaDAOImplementation;
 import com.programacionNCapas.SReynaProgramacionNCapas.DAO.DireccionDAOImplementation;
 import com.programacionNCapas.SReynaProgramacionNCapas.DAO.EstadoDAOImplementation;
-import com.programacionNCapas.SReynaProgramacionNCapas.DAO.MunicipioDAOImplementation;
-import com.programacionNCapas.SReynaProgramacionNCapas.DAO.PaisDAOImplementation;
-import com.programacionNCapas.SReynaProgramacionNCapas.DAO.RolDAOImplementation;
+
 import com.programacionNCapas.SReynaProgramacionNCapas.DAO.UsuarioDAOImplementation;
 import com.programacionNCapas.SReynaProgramacionNCapas.DAOJPA.ColoniaDAOJPAImplementation;
+import com.programacionNCapas.SReynaProgramacionNCapas.DAOJPA.DireccionDAOJPAImplementation;
 import com.programacionNCapas.SReynaProgramacionNCapas.DAOJPA.EstadoDAOJPAImplementation;
 import com.programacionNCapas.SReynaProgramacionNCapas.DAOJPA.MunicipioDAOJPAImplementation;
 import com.programacionNCapas.SReynaProgramacionNCapas.DAOJPA.PaisDAOJPAImplementation;
 import com.programacionNCapas.SReynaProgramacionNCapas.DAOJPA.RolDAOJPAImplementation;
 import com.programacionNCapas.SReynaProgramacionNCapas.DAOJPA.UsuarioDAOJPAImplementation;
+import com.programacionNCapas.SReynaProgramacionNCapas.JPA.DireccionJPA;
+import com.programacionNCapas.SReynaProgramacionNCapas.JPA.UsuarioJPA;
 import com.programacionNCapas.SReynaProgramacionNCapas.ML.ColoniaML;
 import com.programacionNCapas.SReynaProgramacionNCapas.ML.DireccionML;
 import com.programacionNCapas.SReynaProgramacionNCapas.ML.ErrorCM;
@@ -25,14 +25,16 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Row;
@@ -71,22 +73,16 @@ public class UsuarioController {
     private UsuarioDAOImplementation usuarioDAOImplementation;
 
     @Autowired
-    private EstadoDAOImplementation estadoDAOImplementation;
-
-    @Autowired
     private MunicipioDAOJPAImplementation municipioDAOJPAImplementation;
-
-    @Autowired
-    private MunicipioDAOImplementation municipioDAOImplementation;
-
-    @Autowired
-    private ColoniaDAOImplementation coloniaDAOImplementation;
 
     @Autowired
     private ColoniaDAOJPAImplementation coloniaDAOJPAImplementation;
 
     @Autowired
     private DireccionDAOImplementation direccionDAOImplementation;
+
+    @Autowired
+    private DireccionDAOJPAImplementation direccionDAOJPAImplementation;
 
     @GetMapping
     public String Index(Model model) {
@@ -95,6 +91,7 @@ public class UsuarioController {
         Result result = usuarioDAOJPAImplementation.GetAll();
 
         if (result.correct) {
+            model.addAttribute("Roles", rolDAOJPAImplementation.GetAll().objects);
             model.addAttribute("usuarios", result.objects);
         } else {
             model.addAttribute("usuarios", null);
@@ -115,7 +112,7 @@ public class UsuarioController {
         int idDireccion = usuario.Direccion.getIdDireccion();
 
         if (idUsuario != 0 && idDireccion == -1) {
-            usuarioDAOImplementation.Update(idUsuario, usuario);
+            usuarioDAOJPAImplementation.Update(idUsuario, usuario);
             return "redirect:/usuario";
         }
         // Caso: actualización de dirección
@@ -125,14 +122,12 @@ public class UsuarioController {
         }
         //Caso: crear dirección
         if (idUsuario != 0 && idDireccion == -2) {
-            direccionDAOImplementation.AddDireccion(idUsuario, usuario);
+            direccionDAOJPAImplementation.Add(usuario);
             return "redirect:/usuario/form?&IdUsuario=" + idUsuario + "&IdDireccion=0";
         }
         //Caso: Editar Usuario
 
         // Caso: errores de validación
-
-
         // Procesar imagen
         if (imagen != null && !imagen.isEmpty()) {
             try {
@@ -186,7 +181,7 @@ public class UsuarioController {
     @GetMapping("DeleteUsuario")
     @ResponseBody
     public ResponseEntity<Object> DeleteUsuario(@RequestParam int IdUser) {
-        Result result = usuarioDAOImplementation.Delete(IdUser);
+        Result result = usuarioDAOJPAImplementation.Delete(IdUser);
 
         if (result.correct) {
             return ResponseEntity.noContent().build(); // 204 No Content
@@ -232,8 +227,16 @@ public class UsuarioController {
 
         // Editar Usuario
         if (idUsuario != 0 && idDireccion == -1) {
-            Result result = usuarioDAOImplementation.GetOne(idUsuario);
-            model.addAttribute("usuario", result.correct ? result.object : null);
+
+            Result result = usuarioDAOJPAImplementation.GetOne(idUsuario);
+
+            UsuarioML usuarioML = (UsuarioML) result.object;
+            usuarioML.setSexo(usuarioML.getSexo().trim());
+            usuarioML.Direccion = new DireccionML();
+            usuarioML.direcciones = new ArrayList<>();
+            usuarioML.Direccion.setIdDireccion(-1);
+
+            model.addAttribute("usuario", usuarioML);
             return "Form"; // Solo datos de usuario para editar
         }
 
@@ -338,9 +341,7 @@ public class UsuarioController {
                 usuario.setNombreUsuario(campos[0]);
                 usuario.setApellidoPaterno(campos[1]);
                 usuario.setApellidoMaterno(campos[2]);
-                SimpleDateFormat formatter = new SimpleDateFormat("dd-MMM-yy");
-
-                usuario.setFechaNacimiento(formatter.parse(campos[3]));
+                usuario.setFechaNacimiento(LocalDate.parse(campos[3], DateTimeFormatter.ofPattern("yyyy-MM-dd")));
                 usuario.setPassword(campos[4]);
                 usuario.setSexo(campos[5]);
                 usuario.setUsername(campos[6]);
@@ -375,7 +376,11 @@ public class UsuarioController {
                 usuario.setNombreUsuario(row.getCell(0) != null ? row.getCell(0).toString() : "");
                 usuario.setApellidoPaterno(row.getCell(1) != null ? row.getCell(1).toString() : "");
                 usuario.setApellidoMaterno(row.getCell(2) != null ? row.getCell(2).toString() : "");
-                usuario.setFechaNacimiento(row.getCell(3).getDateCellValue());
+                usuario.setFechaNacimiento(
+                        row.getCell(3).getCellType() == CellType.NUMERIC
+                        ? row.getCell(3).getDateCellValue().toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+                        : LocalDate.parse(row.getCell(3).getStringCellValue(), DateTimeFormatter.ofPattern("dd-MM-yyyy"))
+                );
                 usuario.setPassword(row.getCell(4).toString());
                 usuario.setSexo(row.getCell(5).toString());
                 usuario.setUsername(row.getCell(6).toString());

@@ -1,5 +1,6 @@
 package com.programacionNCapas.SReynaProgramacionNCapas.JPA;
 
+import com.programacionNCapas.SReynaProgramacionNCapas.ML.UsuarioML;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -10,13 +11,13 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
-@Entity(name="Direccion")
+@Entity(name = "Direccion")
 @Table(name = "direccion")
 public class DireccionJPA {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="iddireccion")
+    @Column(name = "iddireccion")
     private int IdDireccion;
     @Column(name = "calle")
     private String Calle;
@@ -25,13 +26,16 @@ public class DireccionJPA {
     @Column(name = "numeroexterior")
     private String NumeroExterior;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "idusuario",referencedColumnName ="iduser", nullable  = false)
+    @JoinColumn(name = "idusuario", referencedColumnName = "iduser", nullable = false)
     public UsuarioJPA Usuario;
     @ManyToOne
-    @JoinColumn(name="idcolonia")
+    @JoinColumn(name = "idcolonia")
     public ColoniaJPA Colonia;
 
-    public DireccionJPA() {
+    public DireccionJPA(UsuarioML usuario) {
+        this.NumeroExterior = usuario.Direccion.getNumeroExterior();
+        this.Calle = usuario.Direccion.getCalle();
+        this.NumeroInterior = usuario.Direccion.getNumeroInterior();
     }
 
     public DireccionJPA(int IdDireccion, String Calle, String NumeroInterior, String NumeroExterior, ColoniaJPA Colonia) {
@@ -40,6 +44,12 @@ public class DireccionJPA {
         this.NumeroInterior = NumeroInterior;
         this.NumeroExterior = NumeroExterior;
         this.Colonia = Colonia;
+    }
+
+    public DireccionJPA(int IdDireccion) {
+        this.IdDireccion = IdDireccion;
+    }
+     public DireccionJPA() {
     }
 
     public int getIdDireccion() {

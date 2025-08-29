@@ -46,7 +46,6 @@ public class UsuarioDAOJPAImplementation implements IUsuarioDAOJPA {
         Result result = new Result();
         try {
             UsuarioJPA usuarioJPA = entityManager.find(UsuarioJPA.class, IdUser);
-
             result.object = new UsuarioML(usuarioJPA);
             result.correct = true;
 
@@ -65,7 +64,6 @@ public class UsuarioDAOJPAImplementation implements IUsuarioDAOJPA {
 
         try {
             UsuarioJPA usuarioJPA = new UsuarioJPA(usuario);
-
             entityManager.persist(usuarioJPA);
             result.correct = true;
 
@@ -77,14 +75,38 @@ public class UsuarioDAOJPAImplementation implements IUsuarioDAOJPA {
         return result;
     }
 
+    @Transactional
     @Override
     public Result Update(int IdUser, UsuarioML usuario) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        Result result = new Result();
+        try {
+            UsuarioJPA usuarioJPA = new UsuarioJPA(usuario);
+            entityManager.merge(usuarioJPA);
+            result.correct = true;
+        } catch (Exception ex) {
+            result.correct = false;
+            result.ex = ex;
+            result.errMessage = ex.getLocalizedMessage();
+        }
+
+        return result;
+
     }
 
+    @Transactional
     @Override
     public Result Delete(int IdUser) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        Result result = new Result();
+        try {
+            UsuarioJPA usuario = entityManager.find(UsuarioJPA.class, IdUser);
+            entityManager.remove(usuario);
+            result.correct = true;
+        } catch (Exception ex) {
+            result.correct = false;
+            result.errMessage = ex.getLocalizedMessage();
+            result.ex = ex;
+        }
+        return result;
     }
 
     @Override

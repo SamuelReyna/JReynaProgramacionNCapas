@@ -1,9 +1,9 @@
 package com.programacionNCapas.SReynaProgramacionNCapas.Controller;
 
 import com.programacionNCapas.SReynaProgramacionNCapas.DAO.ColoniaDAOImplementation;
-import com.programacionNCapas.SReynaProgramacionNCapas.DAO.DireccionDAOImplementation;
 import com.programacionNCapas.SReynaProgramacionNCapas.DAO.EstadoDAOImplementation;
 import com.programacionNCapas.SReynaProgramacionNCapas.DAO.MunicipioDAOImplementation;
+import com.programacionNCapas.SReynaProgramacionNCapas.DAOJPA.DireccionDAOJPAImplementation;
 import com.programacionNCapas.SReynaProgramacionNCapas.ML.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,8 +23,7 @@ public class DireccionController {
     private EstadoDAOImplementation estadoDAOImplementation;
 
     @Autowired
-    private DireccionDAOImplementation direccionDAOImplementation;
-
+    private DireccionDAOJPAImplementation direccionDAOJPAImplementation;
     @Autowired
     private MunicipioDAOImplementation municipioDAOImplementation;
 
@@ -71,7 +70,7 @@ public class DireccionController {
     @ResponseBody
     public ResponseEntity<Object> DeleteDireccion(@RequestParam int IdDireccion) {
 
-        Result result = direccionDAOImplementation.DeleteDireccion(IdDireccion);
+        Result result = direccionDAOJPAImplementation.Delete(IdDireccion);
         if (result.correct) {
             return ResponseEntity.noContent().build(); // 204 No Content
         } else {

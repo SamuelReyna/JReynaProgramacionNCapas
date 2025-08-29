@@ -7,12 +7,9 @@ public class DireccionML {
     private String NumeroInterior;
     private String NumeroExterior;
     public ColoniaML Colonia;
-   
 
     public DireccionML() {
     }
-
-    
 
     public DireccionML(
             int IdDireccion,
@@ -25,6 +22,10 @@ public class DireccionML {
         this.NumeroExterior = NumeroExterior;
         this.NumeroInterior = NumeroInterior;
         this.Colonia = Colonia;
+    }
+
+    public DireccionML(int IdDireccion) {
+        this.IdDireccion = IdDireccion;
     }
 
     public void setIdDireccion(int IdDireccion) {

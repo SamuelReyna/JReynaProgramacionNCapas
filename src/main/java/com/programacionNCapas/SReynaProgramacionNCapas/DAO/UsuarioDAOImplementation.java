@@ -13,6 +13,7 @@ import java.sql.Clob;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -67,7 +68,12 @@ public class UsuarioDAOImplementation implements IUserDAO {
                         usuario.setNombre(resultSet.getString("Nombre"));
                         usuario.setApellidoPaterno(resultSet.getString("ApellidoPaterno"));
                         usuario.setApellidoMaterno(resultSet.getString("ApellidoMaterno"));
-                        usuario.setFechaNacimiento(usuario.getFechaNacimiento());
+                        java.sql.Date sqlDate = resultSet.getDate("fechaNacimiento");
+                        if (sqlDate != null) {
+                            usuario.setFechaNacimiento(sqlDate.toLocalDate());
+                        } else {
+                            usuario.setFechaNacimiento(null);
+                        }
                         usuario.setPassword(resultSet.getString("password"));
                         usuario.setSexo(resultSet.getString("sexo"));
                         usuario.setTelefono(resultSet.getString("telefono"));
@@ -183,7 +189,12 @@ public class UsuarioDAOImplementation implements IUserDAO {
                     usuario.setNombreUsuario(resultSet.getString("Nombre"));
                     usuario.setApellidoPaterno(resultSet.getString("apellidoPaterno"));
                     usuario.setApellidoMaterno(resultSet.getString("apellidoMaterno"));
-                    usuario.setFechaNacimiento(resultSet.getDate("fechaNacimiento"));
+                    java.sql.Date sqlDate = resultSet.getDate("fechaNacimiento");
+                    if (sqlDate != null) {
+                        usuario.setFechaNacimiento(sqlDate.toLocalDate());
+                    } else {
+                        usuario.setFechaNacimiento(null);
+                    }
                     usuario.setSexo(resultSet.getString("sexo"));
                     usuario.setCelular(resultSet.getString("celular"));
                     usuario.setTelefono(resultSet.getString("Telefono"));
@@ -262,7 +273,10 @@ public class UsuarioDAOImplementation implements IUserDAO {
                         callableStatement.setString(1, usuario.getNombreUsuario());
                         callableStatement.setString(2, usuario.getApellidoPaterno());
                         callableStatement.setString(3, usuario.getApellidoMaterno());
-                        callableStatement.setDate(4, (Date) usuario.getFechaNacimiento());
+                        LocalDate localDate = usuario.getFechaNacimiento();
+                        if (localDate != null) {
+                            callableStatement.setDate(4, Date.valueOf(localDate));
+                        }
                         callableStatement.setString(5, usuario.getPassword());
                         callableStatement.setString(6, usuario.getSexo());
                         callableStatement.setString(7, usuario.getUsername());
@@ -303,7 +317,10 @@ public class UsuarioDAOImplementation implements IUserDAO {
                 cs.setString(1, usuario.getNombreUsuario());
                 cs.setString(2, usuario.getApellidoPaterno());
                 cs.setString(3, usuario.getApellidoMaterno());
-                cs.setDate(4, (Date) usuario.getFechaNacimiento());
+                LocalDate localDate = usuario.getFechaNacimiento();
+                if (localDate != null) {
+                    cs.setDate(4, Date.valueOf(localDate));
+                }
                 cs.setString(5, usuario.getPassword());
                 cs.setString(6, usuario.getSexo());
                 cs.setString(7, usuario.getUsername());

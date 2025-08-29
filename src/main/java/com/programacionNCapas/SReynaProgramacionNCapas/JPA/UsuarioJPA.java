@@ -1,6 +1,5 @@
 package com.programacionNCapas.SReynaProgramacionNCapas.JPA;
 
-import com.programacionNCapas.SReynaProgramacionNCapas.ML.DireccionML;
 import com.programacionNCapas.SReynaProgramacionNCapas.ML.UsuarioML;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -13,9 +12,10 @@ import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity(name = "Usuario")
 @Table(name = "usuarios")
@@ -35,8 +35,9 @@ public class UsuarioJPA {
     private String ApellidoPaterno;
     @Column(name = "password")
     private String Password;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Column(name = "fechanacimiento")
-    private Date FechaNacimiento;
+    private LocalDate FechaNacimiento;
     @Column(name = "email", unique = true)
     private String Email;
     @Column(name = "telefono")
@@ -50,6 +51,8 @@ public class UsuarioJPA {
     @Lob
     @Column(name = "img")
     private String Img;
+    @Column(name = "estatus")
+    private int Estatus;
     @ManyToOne
     @JoinColumn(name = "idrol")
     public RolJPA Rol = new RolJPA();
@@ -75,17 +78,22 @@ public class UsuarioJPA {
         this.Img = usuarioML.getImg();
         this.Rol = new RolJPA();
         this.Rol.setIdRol(usuarioML.Rol.getIdRol());
-        for (DireccionML direccione : usuarioML.direcciones) {
-            DireccionJPA direccion = new DireccionJPA();
-            direccion.setCalle(direccione.getCalle());
-            direccion.setNumeroExterior(direccione.getNumeroExterior());
-            direccion.setNumeroInterior(direccione.getNumeroInterior());
+
+        DireccionJPA direccion = new DireccionJPA(-1);
+        if (usuarioML.Direccion.getIdDireccion() == -1) {
+            Direcciones = null;
+            direccion.setIdDireccion(-1);
+        } else {
+            direccion.setCalle(usuarioML.Direccion.getCalle());
+            direccion.setNumeroExterior(usuarioML.Direccion.getNumeroExterior());
+            direccion.setNumeroInterior(usuarioML.Direccion.getNumeroInterior());
             direccion.Colonia = new ColoniaJPA();
-            direccion.Colonia.setIdColonia(direccione.Colonia.getIdColonia());
+            direccion.Colonia.setIdColonia(usuarioML.Direccion.Colonia.getIdColonia());
             direccion.Usuario = this;
 
             Direcciones.add(direccion);
         }
+
     }
 
     public int getIdUser() {
@@ -98,6 +106,14 @@ public class UsuarioJPA {
 
     public String getUsername() {
         return Username;
+    }
+
+    public int getEstatus() {
+        return Estatus;
+    }
+
+    public void setEstatus(int Estatus) {
+        this.Estatus = Estatus;
     }
 
     public void setUsername(String Username) {
@@ -136,11 +152,11 @@ public class UsuarioJPA {
         this.Password = Password;
     }
 
-    public Date getFechaNacimiento() {
+    public LocalDate getFechaNacimiento() {
         return FechaNacimiento;
     }
 
-    public void setFechaNacimiento(Date FechaNacimiento) {
+    public void setFechaNacimiento(LocalDate FechaNacimiento) {
         this.FechaNacimiento = FechaNacimiento;
     }
 
@@ -200,7 +216,7 @@ public class UsuarioJPA {
         this.Rol = Rol;
     }
 
-    public UsuarioJPA(int IdUser, String Username, String NombreUsuario, String ApellidoMaterno, String ApellidoPaterno, String Password, Date FechaNacimiento, String Email, String Telefono, String Celular, String Curp, String Sexo, String Img) {
+    public UsuarioJPA(int IdUser, String Username, String NombreUsuario, String ApellidoMaterno, String ApellidoPaterno, String Password, LocalDate FechaNacimiento, String Email, String Telefono, String Celular, String Curp, String Sexo, String Img) {
         this.IdUser = IdUser;
         this.Username = Username;
         this.NombreUsuario = NombreUsuario;
