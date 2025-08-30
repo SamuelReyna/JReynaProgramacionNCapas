@@ -113,7 +113,19 @@ public class UsuarioDAOJPAImplementation implements IUsuarioDAOJPA {
 
     @Override
     public Result LogicalDelete(int IdUser) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        Result result = new Result();
+
+        try {
+            UsuarioJPA usuarioJPA = entityManager.find(UsuarioJPA.class, IdUser);
+            usuarioJPA.setEstatus(usuarioJPA.getEstatus() == 1 ? 0 : 1);
+            entityManager.merge(usuarioJPA);
+            result.correct = true;
+        } catch (Exception ex) {
+            result.correct = false;
+            result.errMessage = ex.getLocalizedMessage();
+            result.ex = ex;
+        }
+        return result;
     }
 
 }

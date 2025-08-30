@@ -59,6 +59,8 @@
                         <thead class="table-dark">
                             <tr>
                                 <th scope="col">Acciones</th>
+                                <th scope="col">Estatus</th>
+
                                 <th scope="col">Nombre</th>
                                 <th scope="col">Username</th>
                                 <th scope="col">Datos de contacto</th>
@@ -84,6 +86,11 @@
                                                   class="btn text-bg-danger btnDeleteUsuario">
                                             <i class="bi bi-trash-fill"></i>
                                         </button>
+                                    </div>
+                                </td>
+                                <td> 
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" th:checked="${usuario.Estatus}" type="checkbox" id="flexSwitchCheckDefault">
                                     </div>
                                 </td>
                                 <td class="text-center">
@@ -192,6 +199,10 @@
                         console.error("Error al eliminar");
                     }
                 }).catch(err => console.error("Error en fetch:", err));
+            });
+            
+            $(document).on('click', '', function(){
+               fetch(`/usuario/`)
             });
         </script>
 

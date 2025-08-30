@@ -1,7 +1,6 @@
 package com.programacionNCapas.SReynaProgramacionNCapas.Controller;
 
 import com.programacionNCapas.SReynaProgramacionNCapas.DAO.DireccionDAOImplementation;
-import com.programacionNCapas.SReynaProgramacionNCapas.DAO.EstadoDAOImplementation;
 
 import com.programacionNCapas.SReynaProgramacionNCapas.DAO.UsuarioDAOImplementation;
 import com.programacionNCapas.SReynaProgramacionNCapas.DAOJPA.ColoniaDAOJPAImplementation;
@@ -263,6 +262,19 @@ public class UsuarioController {
     @GetMapping("/cargamasiva")
     public String CargaMasiva() {
         return "CargaMasiva";
+    }
+
+    @GetMapping("/estatus")
+    @ResponseBody
+    public ResponseEntity<Object> LogicalDelete(@RequestParam int IdUser) {
+        Result result = usuarioDAOJPAImplementation.LogicalDelete(IdUser);
+
+        if (result.correct) {
+            return ResponseEntity.noContent().build(); // 204 No Content
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500 si falla
+        }
+
     }
 
     @PostMapping("/cargamasiva")

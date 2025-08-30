@@ -58,6 +58,8 @@ public class UsuarioML {
         this.Username = usuarioJPA.getUsername();
         this.Sexo = usuarioJPA.getSexo();
         this.Password = usuarioJPA.getPassword();
+        this.Estatus = usuarioJPA.getEstatus();
+
         this.Rol.setIdRol(usuarioJPA.Rol.getIdRol());
         this.Rol.setNombreRol(usuarioJPA.Rol.getNombre());
         if (usuarioJPA.Direcciones != null && !usuarioJPA.Direcciones.isEmpty()) {
