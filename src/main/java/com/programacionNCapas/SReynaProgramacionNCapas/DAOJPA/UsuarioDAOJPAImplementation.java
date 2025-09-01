@@ -111,6 +111,7 @@ public class UsuarioDAOJPAImplementation implements IUsuarioDAOJPA {
         return result;
     }
 
+    @Transactional
     @Override
     public Result LogicalDelete(int IdUser) {
         Result result = new Result();

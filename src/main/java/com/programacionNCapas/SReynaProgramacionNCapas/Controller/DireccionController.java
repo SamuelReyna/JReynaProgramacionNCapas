@@ -3,7 +3,10 @@ package com.programacionNCapas.SReynaProgramacionNCapas.Controller;
 import com.programacionNCapas.SReynaProgramacionNCapas.DAO.ColoniaDAOImplementation;
 import com.programacionNCapas.SReynaProgramacionNCapas.DAO.EstadoDAOImplementation;
 import com.programacionNCapas.SReynaProgramacionNCapas.DAO.MunicipioDAOImplementation;
+import com.programacionNCapas.SReynaProgramacionNCapas.DAOJPA.ColoniaDAOJPAImplementation;
 import com.programacionNCapas.SReynaProgramacionNCapas.DAOJPA.DireccionDAOJPAImplementation;
+import com.programacionNCapas.SReynaProgramacionNCapas.DAOJPA.EstadoDAOJPAImplementation;
+import com.programacionNCapas.SReynaProgramacionNCapas.DAOJPA.MunicipioDAOJPAImplementation;
 import com.programacionNCapas.SReynaProgramacionNCapas.ML.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,50 +23,50 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class DireccionController {
 
     @Autowired
-    private EstadoDAOImplementation estadoDAOImplementation;
+    private EstadoDAOJPAImplementation estadoDAOJPAImplementation;
 
     @Autowired
     private DireccionDAOJPAImplementation direccionDAOJPAImplementation;
     @Autowired
-    private MunicipioDAOImplementation municipioDAOImplementation;
+    private MunicipioDAOJPAImplementation municipioDAOJPAImplementation;
 
     @Autowired
-    private ColoniaDAOImplementation coloniaDAOImplementation;
+    private ColoniaDAOJPAImplementation coloniaDAOJPAImplementation;
 
-    @GetMapping("GetEstados/{IdPais}")
-    @ResponseBody
-    public Result EstadoByPais(@PathVariable int IdPais) {
-        return estadoDAOImplementation.GetByPais(IdPais);
-    }
-
-    @GetMapping("GetMunicipios/{IdEstado}")
-    @ResponseBody
-    public Result MunicipioByEstado(@PathVariable int IdEstado) {
-        return municipioDAOImplementation.GetByEstado(IdEstado);
-    }
-
-    @GetMapping("GetColonias/{IdMunicipio}")
-    @ResponseBody
-    public Result ColoniaByMunicipio(@PathVariable int IdMunicipio) {
-        return coloniaDAOImplementation.GetByMunicipio(IdMunicipio);
-    }
+//    @GetMapping("GetEstados/{IdPais}")
+//    @ResponseBody
+//    public Result EstadoByPais(@PathVariable int IdPais) {
+//        return estadoDAOJPAImplementation.GetByPais(IdPais);
+//    }
+//
+//    @GetMapping("GetMunicipios/{IdEstado}")
+//    @ResponseBody
+//    public Result MunicipioByEstado(@PathVariable int IdEstado) {
+//        return municipioDAOJPAImplementation.GetByEstado(IdEstado);
+//    }
+//
+//    @GetMapping("GetColonias/{IdMunicipio}")
+//    @ResponseBody
+//    public Result ColoniaByMunicipio(@PathVariable int IdMunicipio) {
+//        return coloniaDAOJPAImplementation.GetByMunicipio(IdMunicipio);
+//    }
 
     @GetMapping("GetColonias")
     @ResponseBody
     public Result Colonias() {
-        return coloniaDAOImplementation.GetAll();
+        return coloniaDAOJPAImplementation.GetAll();
     }
 
     @GetMapping("GetEstados")
     @ResponseBody
     public Result Estados() {
-        return estadoDAOImplementation.GetAll();
+        return estadoDAOJPAImplementation.GetAll();
     }
 
     @GetMapping("GetMunicipios")
     @ResponseBody
     public Result Municipios() {
-        return municipioDAOImplementation.GetAll();
+        return municipioDAOJPAImplementation.GetAll();
     }
 
     @GetMapping("DeleteDireccion")
