@@ -1,7 +1,5 @@
 package com.programacionNCapas.SReynaProgramacionNCapas.Controller;
 
-import com.programacionNCapas.SReynaProgramacionNCapas.DAO.DireccionDAOImplementation;
-
 import com.programacionNCapas.SReynaProgramacionNCapas.DAO.UsuarioDAOImplementation;
 import com.programacionNCapas.SReynaProgramacionNCapas.DAOJPA.ColoniaDAOJPAImplementation;
 import com.programacionNCapas.SReynaProgramacionNCapas.DAOJPA.DireccionDAOJPAImplementation;
@@ -10,14 +8,13 @@ import com.programacionNCapas.SReynaProgramacionNCapas.DAOJPA.MunicipioDAOJPAImp
 import com.programacionNCapas.SReynaProgramacionNCapas.DAOJPA.PaisDAOJPAImplementation;
 import com.programacionNCapas.SReynaProgramacionNCapas.DAOJPA.RolDAOJPAImplementation;
 import com.programacionNCapas.SReynaProgramacionNCapas.DAOJPA.UsuarioDAOJPAImplementation;
-import com.programacionNCapas.SReynaProgramacionNCapas.JPA.DireccionJPA;
-import com.programacionNCapas.SReynaProgramacionNCapas.JPA.UsuarioJPA;
 import com.programacionNCapas.SReynaProgramacionNCapas.ML.ColoniaML;
 import com.programacionNCapas.SReynaProgramacionNCapas.ML.DireccionML;
 import com.programacionNCapas.SReynaProgramacionNCapas.ML.ErrorCM;
 import com.programacionNCapas.SReynaProgramacionNCapas.ML.Result;
 import com.programacionNCapas.SReynaProgramacionNCapas.ML.RolML;
 import com.programacionNCapas.SReynaProgramacionNCapas.ML.UsuarioML;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import java.io.BufferedReader;
@@ -41,6 +38,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -76,9 +74,6 @@ public class UsuarioController {
 
     @Autowired
     private ColoniaDAOJPAImplementation coloniaDAOJPAImplementation;
-
-    @Autowired
-    private DireccionDAOImplementation direccionDAOImplementation;
 
     @Autowired
     private DireccionDAOJPAImplementation direccionDAOJPAImplementation;

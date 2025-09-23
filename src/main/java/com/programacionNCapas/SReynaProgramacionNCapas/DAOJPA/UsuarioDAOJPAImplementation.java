@@ -129,4 +129,23 @@ public class UsuarioDAOJPAImplementation implements IUsuarioDAOJPA {
         return result;
     }
 
+    @Override
+    public Result loadUserByUsername(String Username) {
+        Result result = new Result();
+        try {
+            TypedQuery<UsuarioJPA> queryUsuario = entityManager.createQuery(
+                    "SELECT u FROM Usuario u WHERE u.Username = :username", UsuarioJPA.class);
+            queryUsuario.setParameter("username", Username);
+            UsuarioJPA usuario = queryUsuario.getSingleResult();
+            result.object = usuario;
+            result.correct = true;
+
+        } catch (Exception ex) {
+            result.correct = false;
+            result.errMessage = ex.getLocalizedMessage();
+            result.ex = ex;
+        }
+        return result;
+    }
+
 }

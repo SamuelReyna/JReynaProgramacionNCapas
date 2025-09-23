@@ -29,7 +29,7 @@
                     <button class="btn text-bg-success m-1" type="button" >
                         <i class="bi bi-arrow-clockwise"></i>
                     </button>
-                    <a 
+                    <a sec:authorize="hasAnyRole('ADMIN')"
                         th:href="@{/usuario/form?(IdUsuario=${usuario.IdUser}, IdDireccion=-2)}"
                         class="btn text-bg-primary m-1"
                         >
@@ -46,6 +46,7 @@
                     <div class="card shadow mb-2">
                         <!-- Editar usuario boton -->
                         <a 
+                            sec:authorize="hasAnyRole('ADMIN')"
                             th:href="@{/usuario/form?(IdUsuario=${usuario.IdUser}, IdDireccion=-1)}"
                             class="btn  m-1"
                             >
@@ -100,7 +101,7 @@
                     <div class="table-responsive text-center   ">
                         <table class="table table-light table-hover rounded shadow mb-2">
                             <thead class="table-dark">
-                            <th scope="col">Acciones</th>
+                            <th sec:authorize="hasAnyRole('ADMIN')" scope="col">Acciones</th>
                             <th scope="col">Calle</th>
                             <th scope="col">Número Interior</th>
                             <th scope="col">Número Exterior</th>
@@ -116,16 +117,16 @@
                                     <td colspan="9" class="">Sin Direcciones registradas...</td>
                                 </tr>
                                 <tr th:if="${usuario.direcciones.size() > null }" th:each="direccion : ${usuario.direcciones}">
-                                    <td>
+                                    <td sec:authorize="hasAnyRole('ADMIN')">
                                         <div class="row">
                                             <div class="d-flex justify-content-center gap-2">
                                                 <!-- Editar direccion boton -->
 
-                                                <button   th:attr="data-id=${direccion.IdDireccion}"
+                                                <button  sec:authorize="hasAnyRole('ADMIN')" th:attr="data-id=${direccion.IdDireccion}"
                                                           class="btn text-bg-danger btnDeleteDireccion">
                                                     <i class="bi bi-trash-fill"></i>
                                                 </button>
-                                                <a   th:href="@{/usuario/form?(IdUsuario=${usuario.IdUser}, IdDireccion=${direccion.IdDireccion})}"
+                                                <a  sec:authorize="hasAnyRole('ADMIN')" th:href="@{/usuario/form?(IdUsuario=${usuario.IdUser}, IdDireccion=${direccion.IdDireccion})}"
                                                    class="btn text-bg-warning">
                                                     <i class="bi bi-pencil-fill"></i>
                                                 </a>

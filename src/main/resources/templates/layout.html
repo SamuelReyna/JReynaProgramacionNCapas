@@ -3,7 +3,9 @@
 Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
 Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this template
 -->
-<html>
+<html       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+
+>
     <head>
         <title>Formulario</title>
         <meta charset="UTF-8" />
@@ -84,8 +86,11 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                         <a class="nav-link text-dark" href="/usuario">
                             <i class="bi bi-house"></i> </a>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item" sec:authorize="hasAnyRole('ADMIN')">
                         <a class="nav-link text-dark" href="/usuario/cargamasiva">Carga Masiva</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" th:href="@{/logout}"> Log Out </a>
                     </li>
 
                 </ul>
