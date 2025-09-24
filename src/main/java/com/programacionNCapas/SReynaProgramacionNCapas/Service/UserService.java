@@ -23,6 +23,10 @@ public class UserService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         UsuarioJPA usuario = (UsuarioJPA) usuarioDAOJPAImplementation.loadUserByUsername(username).object;
+        if (usuario == null) {
+            throw new UsernameNotFoundException("Usuario no encontrado: " + username);
+        }
+        System.out.println("DEBUG usuario: " + usuario.getUsername() + " pass: " + usuario.getPassword());
         return (UserDetails) usuario;
     }
 
