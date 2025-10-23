@@ -67,6 +67,14 @@ public class UsuarioJPA implements UserDetails {
     public UsuarioJPA() {
     }
 
+    public UsuarioJPA(String username, Integer idUser, String nombreUsuario, Integer Estatus, String email) {
+        this.Username = username;
+        this.IdUser = idUser;
+        this.NombreUsuario = nombreUsuario;
+        this.Estatus = Estatus;
+        this.Email = email;
+    }
+
     public UsuarioJPA(UsuarioML usuarioML) {
         this.IdUser = usuarioML.getIdUser();
         this.NombreUsuario = usuarioML.getNombreUsuario();
@@ -246,7 +254,7 @@ public class UsuarioJPA implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return true; 
+        return true;
     }
 
     @Override
@@ -261,6 +269,6 @@ public class UsuarioJPA implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return this.Estatus == 1; 
+        return this.Estatus == 1;
     }
 }

@@ -9,6 +9,7 @@ import com.programacionNCapas.SReynaProgramacionNCapas.ML.Result;
 import com.programacionNCapas.SReynaProgramacionNCapas.ML.UsuarioML;
 import java.sql.ResultSet;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.CallableStatementCallback;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -35,7 +36,7 @@ public class DireccionDAOImplementation implements IDireccionDAO {
                 cs.executeUpdate();
                 return true;
             });
-        } catch (Exception ex) {
+        } catch (DataAccessException ex) {
             result.correct = false;
             result.ex = ex;
             result.errMessage = ex.getLocalizedMessage();
@@ -75,7 +76,7 @@ public class DireccionDAOImplementation implements IDireccionDAO {
                 cs.setInt(4, usuario.Direccion.Colonia.getIdColonia());
                 cs.setInt(5, IdUsuario);
                 int status = cs.executeUpdate();
-                return status == -1;
+                return true;
             });
         } catch (Exception ex) {
             result.correct = false;
@@ -104,7 +105,6 @@ public class DireccionDAOImplementation implements IDireccionDAO {
             result.correct = jdbcTemplate.execute("CALL GetDireccionById(?,?)", (CallableStatementCallback<Boolean>) cs -> {
                 cs.registerOutParameter(1, java.sql.Types.REF_CURSOR);
                 cs.setInt(2, IdDireccion);
-
                 cs.execute();
 
                 ResultSet resultSet = (ResultSet) cs.getObject(1);

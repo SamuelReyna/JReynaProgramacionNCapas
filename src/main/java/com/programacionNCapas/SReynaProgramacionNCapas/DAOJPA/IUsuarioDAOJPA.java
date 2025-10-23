@@ -1,4 +1,5 @@
 package com.programacionNCapas.SReynaProgramacionNCapas.DAOJPA;
+
 import com.programacionNCapas.SReynaProgramacionNCapas.ML.Result;
 import com.programacionNCapas.SReynaProgramacionNCapas.ML.UsuarioML;
 
@@ -9,6 +10,8 @@ public interface IUsuarioDAOJPA {
     Result GetOne(int IdUser);
 
     Result loadUserByUsername(String Username);
+
+    Result loadUserByEmail(String Email);
 
     Result Add(UsuarioML usuario);
 

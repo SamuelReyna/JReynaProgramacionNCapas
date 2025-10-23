@@ -5,6 +5,7 @@ import com.programacionNCapas.SReynaProgramacionNCapas.ML.RolML;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.CallableStatementCallback;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -35,7 +36,7 @@ public class RolDAOImplementation implements IRolDAO {
                 }
                 return true;
             });
-        } catch (Exception ex) {
+        } catch (DataAccessException ex) {
             result.ex = ex;
             result.correct = false;
             result.errMessage = ex.getLocalizedMessage();

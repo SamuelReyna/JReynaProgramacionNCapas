@@ -27,7 +27,7 @@ import org.springframework.stereotype.Repository;
 public class UsuarioDAOImplementation implements IUserDAO {
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private JdbcTemplate jdbcTemplate; 
 
     @Override
     public Result GetAll(UsuarioML user) {
@@ -289,7 +289,6 @@ public class UsuarioDAOImplementation implements IUserDAO {
                         callableStatement.setString(14, usuario.getDireccion().getNumeroInterior());
                         callableStatement.setString(15, usuario.getDireccion().getNumeroExterior());
                         callableStatement.setInt(16, usuario.getDireccion().Colonia.getIdColonia());
-
                         Clob clob = callableStatement.getConnection().createClob();
                         clob.setString(1, usuario.getImg());
                         callableStatement.setClob(17, clob);
@@ -300,7 +299,7 @@ public class UsuarioDAOImplementation implements IUserDAO {
                     }
             );
 
-        } catch (Exception ex) {
+        } catch (DataAccessException ex) {
             result.ex = ex;
             result.errMessage = ex.getLocalizedMessage();
             result.correct = false;

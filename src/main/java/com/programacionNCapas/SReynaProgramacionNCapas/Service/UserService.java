@@ -14,6 +14,7 @@ public class UserService implements UserDetailsService {
     @Autowired
     private UsuarioDAOJPAImplementation usuarioDAOJPAImplementation;
 
+ 
     /**
      *
      * @param username
@@ -26,8 +27,6 @@ public class UserService implements UserDetailsService {
         if (usuario == null) {
             throw new UsernameNotFoundException("Usuario no encontrado: " + username);
         }
-        System.out.println("DEBUG usuario: " + usuario.getUsername() + " pass: " + usuario.getPassword());
         return (UserDetails) usuario;
     }
-
 }

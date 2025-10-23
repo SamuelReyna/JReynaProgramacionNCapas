@@ -14,7 +14,7 @@ import com.programacionNCapas.SReynaProgramacionNCapas.ML.ErrorCM;
 import com.programacionNCapas.SReynaProgramacionNCapas.ML.Result;
 import com.programacionNCapas.SReynaProgramacionNCapas.ML.RolML;
 import com.programacionNCapas.SReynaProgramacionNCapas.ML.UsuarioML;
-import jakarta.annotation.security.RolesAllowed;
+import com.programacionNCapas.SReynaProgramacionNCapas.Service.UsuarioService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import java.io.BufferedReader;
@@ -38,7 +38,6 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -49,6 +48,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("usuario")
@@ -78,6 +78,9 @@ public class UsuarioController {
     @Autowired
     private DireccionDAOJPAImplementation direccionDAOJPAImplementation;
 
+    @Autowired
+    private UsuarioService usuarioService;
+
     @GetMapping
     public String Index(Model model) {
         UsuarioML usuario = new UsuarioML();
@@ -105,6 +108,22 @@ public class UsuarioController {
         int idUsuario = usuario.getIdUser();
         int idDireccion = usuario.Direccion.getIdDireccion();
 
+        // Procesar imagen
+        if (imagen != null && !imagen.isEmpty()) {
+            try {
+                String nombreArchivo = imagen.getOriginalFilename();
+                if (nombreArchivo != null) {
+                    String extension = nombreArchivo.substring(nombreArchivo.lastIndexOf('.') + 1).toLowerCase();
+                    if (extension.matches("jpg|jpeg|png")) {
+                        String base64Img = Base64.getEncoder().encodeToString(imagen.getBytes());
+                        usuario.setImg(base64Img);
+                    }
+                }
+            } catch (Exception ex) {
+
+            }
+        }
+
         if (idUsuario != 0 && idDireccion == -1) {
             usuarioDAOJPAImplementation.Update(usuario);
             return "redirect:/usuario";
@@ -122,22 +141,6 @@ public class UsuarioController {
         //Caso: Editar Usuario
 
         // Caso: errores de validación
-        // Procesar imagen
-        if (imagen != null && !imagen.isEmpty()) {
-            try {
-                String nombreArchivo = imagen.getOriginalFilename();
-                if (nombreArchivo != null) {
-                    String extension = nombreArchivo.substring(nombreArchivo.lastIndexOf('.') + 1).toLowerCase();
-                    if (extension.matches("jpg|jpeg|png")) {
-                        String base64Img = Base64.getEncoder().encodeToString(imagen.getBytes());
-                        usuario.setImg(base64Img);
-                    }
-                }
-            } catch (Exception ex) {
-
-            }
-        }
-
         // Guardar usuario
         if (idUsuario == 0 && idDireccion == 0) {
             usuarioDAOJPAImplementation.Add(usuario);
@@ -339,6 +342,28 @@ public class UsuarioController {
         return "redirect:/usuario";
     }
 
+    @GetMapping("/encriptar")
+    public String encriptar() {
+        return "hashPasswords";
+    }
+
+    @PostMapping("/hashPasswords")
+    public String HashPasswords(RedirectAttributes redirectAttributes) {
+        Result result = usuarioService.UpdatePasswords();
+
+        if (result.correct) {
+            redirectAttributes.addFlashAttribute("rows", "Filas Afectadas: " + result.object);
+            if (!result.object.equals(0)) {
+                redirectAttributes.addFlashAttribute("mensaje", "Contraseñas actualizadas correctamente.");
+            } else {
+                redirectAttributes.addFlashAttribute("mensaje", "No se actualizo ningúna contraseña.");
+            }
+        } else {
+            redirectAttributes.addFlashAttribute("mensaje", "Error al actualizar las contraseñas.");
+        }
+        return "redirect:/usuario/encriptar";
+    }
+
     private List<UsuarioML> ProcesarTXT(File file) {
         try {
             BufferedReader bufferedReader = new BufferedReader(new FileReader(file, StandardCharsets.UTF_8));
@@ -496,4 +521,5 @@ public class UsuarioController {
         Matcher matcher = pattern.matcher(text);
         return matcher.matches();
     }
+
 }

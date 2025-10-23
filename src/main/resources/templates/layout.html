@@ -5,7 +5,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
 -->
 <html       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
 
->
+            >
     <head>
         <title>Formulario</title>
         <meta charset="UTF-8" />
@@ -76,24 +76,38 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
 
 
     <header>
-        <nav class="navbar navbar-expand-lg navbar-light border-bottom shadow-sm" style="background-color: #ffffff;">
+        <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm">
+            <div class="container">
+                <a class="navbar-brand fw-bold nunito-sans" href="/usuario">
+                    <i class="bi bi-house-fill"></i> Usuarios
+                </a>
+                <button
+                    class="navbar-toggler"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#navbarMinimal"
+                    aria-controls="navbarMinimal"
+                    aria-expanded="false"
+                    aria-label="Toggle navigation"
+                    >
+                    <span class="navbar-toggler-icon"></span>
+                </button>
 
-
-
-            <div class="collapse navbar-collapse" id="navbarMinimal">
-                <ul class="navbar-nav ml-auto">
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" href="/usuario">
-                            <i class="bi bi-house"></i> </a>
-                    </li>
-                    <li class="nav-item" sec:authorize="hasAnyRole('ADMIN')">
-                        <a class="nav-link text-dark" href="/usuario/cargamasiva">Carga Masiva</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" th:href="@{/logout}"> Log Out </a>
-                    </li>
-
-                </ul>
+                <div class="collapse navbar-collapse" id="navbarMinimal">
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                        <li class="nav-item" sec:authorize="hasAnyRole('ADMIN')">
+                            <a class="nav-link text-dark" href="/usuario/cargamasiva">Carga Masiva</a>
+                        </li>
+                        <li class="nav-item" sec:authorize="hasAnyRole('ADMIN')">
+                            <a class="nav-link text-dark" href="/usuario/encriptar">Encriptar Contraseñas</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" th:href="@{/logout}">
+                                <i class="bi bi-box-arrow-right"></i> Cerrar sesión
+                            </a>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </nav>
     </header>
