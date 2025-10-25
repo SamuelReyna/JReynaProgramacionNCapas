@@ -185,7 +185,6 @@ public class UsuarioDAOJPAImplementation implements IUsuarioDAOJPA {
         }
 
         return result;
-
     }
 
     @Transactional

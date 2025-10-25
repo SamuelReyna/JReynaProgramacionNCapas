@@ -10,16 +10,25 @@ public class RolML {
     public RolML() {
     }
 
-    public RolML(RolJPA rolJPA){
+    public RolML(RolJPA rolJPA) {
         this.IdRol = rolJPA.getIdRol();
         this.NombreRol = rolJPA.getNombre();
     }
-    
+
     public RolML(
             String NombreRol,
             int IdRol) {
         this.NombreRol = NombreRol;
         this.IdRol = IdRol;
+    }
+
+    public RolML(
+            int IdRol,
+            String NombreRol
+    ) {
+        this.IdRol = IdRol;
+        this.NombreRol = NombreRol;
+
     }
 
     public void setNombreRol(String NombreRol) {
